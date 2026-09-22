@@ -55,12 +55,15 @@
     @media (max-width: 992px) {
       .home-split-container { grid-template-columns: 1fr; gap: 2.5rem; }
     }
+
+    /* Navbar Oculta Inicialmente na Home Page */
+    .navbar-header.hidden { display: none !important; }
   </style>
 </head>
 <body>
   <div id="app">
-    <!-- Navbar Institucional Verde 02 (#0C2800) + Destaques Oliva (#B9B474) -->
-    <header class="navbar-header">
+    <!-- Navbar Institucional (Oculta na Home, exibida após Login) -->
+    <header class="navbar-header hidden" id="main-header">
       <div class="container navbar-container">
         <!-- Logotipo da Marca -->
         <div class="navbar-brand">
@@ -75,10 +78,7 @@
 
         <!-- Links de Navegação SPA -->
         <nav class="navbar-menu" id="nav-menu">
-          <a href="#home" class="nav-link active" onclick="switchView('home')">
-            <i class="fa-solid fa-house"></i> Home
-          </a>
-          <a href="#dashboard" class="nav-link" onclick="switchView('dashboard')">
+          <a href="#dashboard" class="nav-link active" onclick="switchView('dashboard')">
             <i class="fa-solid fa-chart-pie"></i> Dashboard
           </a>
           <a href="#polos" class="nav-link" onclick="switchView('polos')">
@@ -95,7 +95,7 @@
           </a>
         </nav>
 
-        <!-- Seletor de Perfil Demo (Admin, Gestor, Aluno) -->
+        <!-- Seletor de Perfil & Usuário com Botão Sair -->
         <div class="navbar-profile-section">
           <div class="profile-switcher">
             <span class="switcher-label">Perfil Ativo:</span>
@@ -113,6 +113,10 @@
               <span class="user-role badge-role" id="user-display-role">ADMIN (DENOMINAÇÃO)</span>
             </div>
           </div>
+
+          <button class="btn btn-secondary btn-sm" onclick="performLogout()" style="background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.3);">
+            <i class="fa-solid fa-power-off"></i> Sair
+          </button>
         </div>
       </div>
     </header>
@@ -598,6 +602,14 @@
       const target = document.getElementById('view-' + viewId);
       if (target) target.classList.add('active');
 
+      // Exibir Navbar apenas se a visualização NÃO for a home
+      const header = document.getElementById('main-header');
+      if (viewId === 'home') {
+        header.classList.add('hidden');
+      } else {
+        header.classList.remove('hidden');
+      }
+
       document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.toggle('active', link.getAttribute('href') === '#' + viewId);
       });
@@ -607,6 +619,10 @@
       if (viewId === 'chamada') initChamadaView();
       if (viewId === 'avaliacoes') initAvaliacoesView();
       if (viewId === 'portal-aluno') fetchPortalAluno();
+    }
+
+    function performLogout() {
+      switchView('home');
     }
 
     function changeRole(role) {
@@ -1087,6 +1103,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       setLoginRole('ADMIN');
+      switchView('home');
     });
   </script>
 </body>

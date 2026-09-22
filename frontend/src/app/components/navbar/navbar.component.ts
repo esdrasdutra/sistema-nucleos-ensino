@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService, UserSession } from '../../services/auth.service';
 import { PerfilUsuario } from '../../models/interfaces';
 
@@ -17,12 +17,12 @@ import { PerfilUsuario } from '../../models/interfaces';
             <i class="fa-solid fa-graduation-cap"></i>
           </div>
           <div class="brand-text">
-            <span class="brand-title">NÚCLEOS DE ENSINO</span>
-            <span class="brand-subtitle">GESTAO TEOLOGICA E POLOS EAD</span>
+            <span class="brand-title">QGU - UMADESPA</span>
+            <span class="brand-subtitle">GESTAO TEOLOGICA & NÚCLEOS</span>
           </div>
         </div>
 
-        <!-- Links de Navegação -->
+        <!-- Links de Navegação Interna (Visíveis após Login) -->
         <nav class="navbar-menu">
           <a routerLink="/dashboard" routerLinkActive="active" *ngIf="session.perfil === 'ADMIN' || session.perfil === 'GESTOR_NUCLEO'" class="nav-link">
             <i class="fa-solid fa-chart-pie"></i> Dashboard
@@ -41,10 +41,10 @@ import { PerfilUsuario } from '../../models/interfaces';
           </a>
         </nav>
 
-        <!-- Seletor de Perfil Demo & User Profile -->
+        <!-- Seletor de Perfil Demo & User Profile com Botão Sair -->
         <div class="navbar-profile-section">
           <div class="profile-switcher">
-            <span class="switcher-label">Perfil de Acesso:</span>
+            <span class="switcher-label">Perfil Ativo:</span>
             <div class="btn-group-profile">
               <button 
                 class="btn-profile" 
@@ -74,6 +74,11 @@ import { PerfilUsuario } from '../../models/interfaces';
               <span class="user-role badge-role">{{ getRoleBadgeText(session.perfil) }}</span>
             </div>
           </div>
+
+          <!-- Botão Sair (Voltar para Home / Login) -->
+          <button class="btn btn-secondary btn-sm btn-logout" (click)="realizarLogout()" title="Sair do Sistema">
+            <i class="fa-solid fa-power-off"></i> Sair
+          </button>
         </div>
       </div>
     </header>
@@ -169,7 +174,7 @@ import { PerfilUsuario } from '../../models/interfaces';
     .navbar-profile-section {
       display: flex;
       align-items: center;
-      gap: 1.25rem;
+      gap: 1rem;
     }
 
     .profile-switcher {
@@ -235,7 +240,6 @@ import { PerfilUsuario } from '../../models/interfaces';
       font-size: 0.8rem;
       font-weight: 700;
       color: var(--color-white);
-
       white-space: nowrap;
       max-width: 140px;
       overflow: hidden;
@@ -248,12 +252,27 @@ import { PerfilUsuario } from '../../models/interfaces';
       color: var(--color-olive-soft);
       text-transform: uppercase;
     }
+
+    .btn-logout {
+      background: rgba(255, 255, 255, 0.15);
+      color: var(--color-white);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-logout:hover {
+      background: #991B1B;
+      color: var(--color-white);
+      border-color: #991B1B;
+    }
   `]
 })
 export class NavbarComponent implements OnInit {
   session!: UserSession;
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.authService.currentSession$.subscribe(session => {
@@ -267,9 +286,13 @@ export class NavbarComponent implements OnInit {
 
   getRoleBadgeText(perfil: PerfilUsuario): string {
     switch (perfil) {
-      case 'ADMIN': return 'ADMIN (DENOMINAÇÃO)';
-      case 'GESTOR_NUCLEO': return 'GESTOR DO NÚCLEO';
+      case 'ADMIN': return 'ADMIN';
+      case 'GESTOR_NUCLEO': return 'GESTOR';
       case 'ALUNO': return 'ALUNO';
     }
+  }
+
+  realizarLogout() {
+    this.router.navigate(['/home']);
   }
 }

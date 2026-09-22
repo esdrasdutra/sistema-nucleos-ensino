@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -9,13 +10,16 @@ import { NavbarComponent } from './components/navbar/navbar.component';
   imports: [CommonModule, RouterOutlet, NavbarComponent],
   template: `
     <div class="app-layout">
-      <app-navbar></app-navbar>
+      <!-- Exibe a Navbar somente APÓS o login (oculta na Home) -->
+      <app-navbar *ngIf="showNavbar"></app-navbar>
+
       <main class="main-content">
         <router-outlet></router-outlet>
       </main>
+
       <footer class="app-footer">
         <div class="container footer-content">
-          <p>© 2026 Denominação Cristã — Sistema de Gestão de Núcleos de Ensino & Polos EAD.</p>
+          <p>© 2026 QGU - UMADESPA — Sistema de Gestão de Núcleos de Ensino Teológico.</p>
           <span class="footer-tagline">Desenvolvido com excelência técnica e fidelidade de marca.</span>
         </div>
       </footer>
@@ -62,4 +66,18 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     }
   `]
 })
-export class AppComponent {}
+export class AppComponent implements OnInit {
+  showNavbar = false;
+
+  constructor(private router: Router) {}
+
+  ngOnInit() {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      const url = event.urlAfterRedirects || event.url;
+      // Oculta a navbar se a rota for /home ou /
+      this.showNavbar = !url.includes('/home') && url !== '/';
+    });
+  }
+}
