@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { HomeComponent } from './components/home/home.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { PolosComponent } from './components/polos/polos.component';
 import { ChamadaComponent } from './components/chamada/chamada.component';
@@ -6,11 +7,12 @@ import { AvaliacoesComponent } from './components/avaliacoes/avaliacoes.componen
 import { PortalAlunoComponent } from './components/portal-aluno/portal-aluno.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'home', component: HomeComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'polos', component: PolosComponent },
   { path: 'chamada', component: ChamadaComponent },
   { path: 'avaliacoes', component: AvaliacoesComponent },
   { path: 'portal-aluno', component: PortalAlunoComponent },
-  { path: '**', redirectTo: 'dashboard' }
+  { path: '**', redirectTo: 'home' }
 ];
