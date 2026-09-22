@@ -13,13 +13,36 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
-  <!-- Design System CSS Oficial do Cliente -->
+  <!-- Design System CSS Oficial do Cliente (Caminhos múltiplos para Vercel) -->
+  <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="src/styles.css">
 
   <style>
+    /* Embed do Design System Fallback Garantido para Vercel */
+    :root {
+      --color-white: #FFFFFF;
+      --color-green-01: #123D00;
+      --color-green-02: #0C2800;
+      --color-olive-soft: #B9B474;
+      --color-olive-light: #F7F6EC;
+      --bg-page: #FFFFFF;
+      --bg-surface: #FFFFFF;
+      --bg-surface-alt: #F8FAFC;
+      --text-dark: #0C2800;
+      --text-body: #2D3748;
+      --text-muted: #64748B;
+      --border-subtle: #E2E8F0;
+      --font-display: 'Morganite', 'Bebas Neue', 'Outfit', sans-serif;
+      --font-body: 'Helvetica Now Display', 'Inter', sans-serif;
+      --shadow-card: 0 10px 30px rgba(12, 40, 0, 0.06);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); background-color: var(--bg-page); color: var(--text-dark); }
+    h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: 1px; text-transform: uppercase; color: var(--color-green-02); }
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
     .view-section { display: none; }
     .view-section.active { display: block; }
-    .btn-delete:hover { background-color: var(--status-danger-bg); color: var(--status-danger-text); border-color: var(--status-danger-text); }
+    .btn-delete:hover { background-color: #FEF2F2; color: #991B1B; border-color: #991B1B; }
   </style>
 </head>
 <body>
@@ -141,9 +164,7 @@
                     <th>Progresso Visual</th>
                   </tr>
                 </thead>
-                <tbody id="table-ranking-body">
-                  <!-- Inserido dinamicamente -->
-                </tbody>
+                <tbody id="table-ranking-body"></tbody>
               </table>
             </div>
           </div>
@@ -153,9 +174,7 @@
               <h3><i class="fa-solid fa-chart-pie"></i> Distribuição de Estudantes</h3>
               <span class="badge badge-sucesso">Capacidade dos Núcleos</span>
             </div>
-            <div class="polo-distribution-list" id="polo-dist-list" style="display:flex; flex-direction:column; gap:1.25rem; margin-top:1rem;">
-              <!-- Inserido dinamicamente -->
-            </div>
+            <div class="polo-distribution-list" id="polo-dist-list" style="display:flex; flex-direction:column; gap:1.25rem; margin-top:1rem;"></div>
           </div>
         </div>
       </section>
@@ -174,11 +193,9 @@
           </button>
         </div>
 
-        <div class="polos-grid" id="polos-cards-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
-          <!-- Cards de Polos com botões Editar e Excluir -->
-        </div>
+        <div class="polos-grid" id="polos-cards-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;"></div>
 
-        <!-- Tabela de Turmas com Ações CRUD -->
+        <!-- Tabela de Turmas -->
         <div class="card" style="margin-top: 2.5rem;">
           <div class="card-header-bordered">
             <h3><i class="fa-solid fa-book-bookmark"></i> Turmas Ativas na Rede Teológica</h3>
@@ -197,9 +214,7 @@
                   <th>Ações CRUD</th>
                 </tr>
               </thead>
-              <tbody id="turmas-table-body">
-                <!-- Carregado via JS -->
-              </tbody>
+              <tbody id="turmas-table-body"></tbody>
             </table>
           </div>
         </div>
@@ -408,15 +423,15 @@
     <!-- Footer Institucional -->
     <footer style="background-color: var(--color-green-02); color: rgba(255,255,255,0.8); padding: 1.5rem 0; border-top: 3px solid var(--color-olive-soft); font-size: 0.85rem;">
       <div class="container" style="display:flex; justify-content:space-between; align-items:center;">
-        <p>© 2026 Denominação Cristã — Sistema de Gestão de Núcleos de Ensino & Polos EAD (CRUD + RBAC).</p>
+        <p>© 2026 Denominação Cristã — Sistema de Gestão de Núcleos de Ensino & Polos EAD.</p>
         <span style="color: var(--color-olive-soft); font-weight: 600;">Desenvolvido com excelência técnica e fidelidade de marca.</span>
       </div>
     </footer>
   </div>
 
-  <!-- JavaScript SPA App Engine com CRUD + RBAC -->
+  <!-- JavaScript SPA Engine -->
   <script>
-    const API_BASE = 'http://localhost:8000/api/v1';
+    const API_BASE = '/api/v1';
 
     let currentRole = 'ADMIN';
     let rawAlunos = [];
@@ -524,11 +539,9 @@
         rawPolos = await polosRes.json();
         rawTurmas = await turmasRes.json();
 
-        // Controlar visibilidade do botão Criar Novo Polo (apenas Admin)
         const btnNovo = document.getElementById('btn-novo-polo');
         if (btnNovo) btnNovo.style.display = (currentRole === 'ADMIN') ? 'inline-flex' : 'none';
 
-        // Render Polos Grid com botões Editar e Deletar
         const grid = document.getElementById('polos-cards-grid');
         grid.innerHTML = rawPolos.map(p => `
           <div class="card" style="display:flex; flex-direction:column;">
@@ -572,7 +585,6 @@
           </div>
         `).join('');
 
-        // Render Turmas Table
         const tbody = document.getElementById('turmas-table-body');
         tbody.innerHTML = rawTurmas.map(t => `
           <tr>
@@ -597,7 +609,6 @@
       }
     }
 
-    // Modal Polos
     function openPoloModal() {
       document.getElementById('modal-polo-id').value = '';
       document.getElementById('modal-polo-nome').value = '';
