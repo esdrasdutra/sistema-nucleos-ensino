@@ -2,8 +2,8 @@ export type PerfilUsuario = 'ADMIN' | 'GESTOR_NUCLEO' | 'ALUNO';
 
 export interface Usuario {
   id: number;
-  nome: str;
-  email: str;
+  nome: string;
+  email: string;
   perfil: PerfilUsuario;
   ativo: boolean;
   data_criacao: string;
