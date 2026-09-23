@@ -1,0 +1,28 @@
+    .polos-page { padding-top: 2rem; padding-bottom: 3rem; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+    .sub-headline { font-size: 0.75rem; font-weight: 800; color: var(--color-olive-soft); letter-spacing: 1.5px; text-transform: uppercase; }
+    .polos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .polo-card { display: flex; flex-direction: column; }
+    .polo-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+    .polo-code { font-size: 0.75rem; font-weight: 800; color: var(--color-olive-soft); letter-spacing: 1px; }
+    .polo-title { font-size: 1.8rem; color: var(--color-green-01); margin-bottom: 0.25rem; }
+    .polo-location { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem; }
+    .responsavel-box { background-color: var(--color-olive-light); padding: 0.75rem 1rem; border-radius: var(--radius-sm); border-left: 4px solid var(--color-olive-soft); display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; }
+    .responsavel-icon { font-size: 1.25rem; color: var(--color-green-01); }
+    .responsavel-label { display: block; font-size: 0.675rem; font-weight: 800; text-transform: uppercase; color: var(--color-green-02); }
+    .responsavel-nome { font-size: 0.85rem; font-weight: 700; color: var(--color-green-01); }
+    .polo-stats { display: flex; align-items: center; justify-content: space-around; background-color: var(--bg-surface-alt); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); margin-top: auto; }
+    .stat-item { display: flex; flex-direction: column; align-items: center; }
+    .stat-num { font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; color: var(--color-green-01); line-height: 1; }
+    .stat-desc { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .stat-divider { width: 1px; height: 30px; background-color: var(--border-subtle); }
+    .card-crud-actions { display: flex; gap: 0.5rem; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-subtle); }
+    .btn-delete:hover { background-color: var(--status-danger-bg); color: var(--status-danger-text); border-color: var(--status-danger-text); }
+    .mt-4 { margin-top: 2.5rem; }
+    .modal-backdrop { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(12, 40, 0, 0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-card { background-color: var(--bg-surface); width: 100%; max-width: 500px; border-radius: var(--radius-md); padding: 2rem; box-shadow: var(--shadow-hover); border: 2px solid var(--color-olive-soft); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
+    .grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; }
+  

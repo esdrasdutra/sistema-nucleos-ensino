@@ -1,0 +1,36 @@
+    .avaliacoes-page {
+      padding-top: 2rem;
+      padding-bottom: 3rem;
+    }
+
+    .sub-headline {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--color-olive-soft);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .mb-4 { margin-bottom: 1.5rem; }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .input-nota {
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--color-green-01);
+      text-align: center;
+    }
+
+    .action-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 1.5rem;
+      margin-top: 1rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+  

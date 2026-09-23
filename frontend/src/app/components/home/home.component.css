@@ -1,0 +1,202 @@
+    .home-page {
+      background-color: var(--bg-page);
+      min-height: calc(100vh - 140px);
+      display: flex;
+      align-items: center;
+      padding: 3rem 0;
+    }
+
+    .main-split-section {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 3.5rem;
+      align-items: center;
+    }
+
+    @media (max-width: 992px) {
+      .main-split-section {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+    }
+
+    .header-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: var(--color-olive-light);
+      color: var(--color-green-02);
+      border: 1px solid var(--color-olive-soft);
+      padding: 0.4rem 0.9rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .hero-title {
+      font-size: 3.8rem;
+      color: var(--color-green-01);
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--color-olive-soft);
+      letter-spacing: 1px;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero-description {
+      font-size: 1.05rem;
+      color: var(--text-body);
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .atividades-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .atividade-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-left: 4px solid var(--color-green-01);
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-sm);
+      transition: var(--transition-fast);
+    }
+
+    .atividade-card:hover {
+      border-color: var(--color-olive-soft);
+      transform: translateX(4px);
+    }
+
+    .atividade-icon {
+      font-size: 1.4rem;
+      color: var(--color-green-01);
+      margin-top: 0.1rem;
+    }
+
+    .atividade-title {
+      display: block;
+      font-weight: 700;
+      color: var(--color-green-02);
+      font-size: 0.95rem;
+    }
+
+    .atividade-desc {
+      font-size: 0.825rem;
+      color: var(--text-muted);
+    }
+
+    /* Formulário de Login */
+    .login-card {
+      border: 2px solid var(--color-olive-soft);
+      box-shadow: var(--shadow-hover);
+      padding: 2.25rem;
+      background-color: var(--bg-surface);
+    }
+
+    .login-card-header {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .login-badge-icon {
+      width: 54px;
+      height: 54px;
+      background-color: var(--color-green-02);
+      color: var(--color-olive-soft);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin: 0 auto 1rem auto;
+      box-shadow: var(--shadow-olive-glow);
+    }
+
+    .login-title {
+      font-size: 2rem;
+      color: var(--color-green-01);
+    }
+
+    .login-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .role-selector-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.4rem;
+      background-color: var(--color-olive-light);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-olive);
+    }
+
+    .tab-role {
+      background: none;
+      border: none;
+      padding: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--color-green-02);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .tab-role.active {
+      background-color: var(--color-green-01);
+      color: var(--color-white);
+    }
+
+    .input-with-icon {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-olive-soft);
+    }
+
+    .input-has-icon {
+      padding-left: 2.75rem;
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    .btn-login {
+      padding: 0.9rem;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      margin-top: 1rem;
+    }
+
+    .login-footer {
+      text-align: center;
+      margin-top: 1.25rem;
+    }
+
+    .support-text {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+    }
+  

@@ -1,0 +1,94 @@
+    <div class="avaliacoes-page container">
+      <!-- Header -->
+      <div class="page-header">
+        <div>
+          <span class="sub-headline"><i class="fa-solid fa-award"></i> ACOMPANHAMENTO ACADÊMICO</span>
+          <h1 class="font-display">AVALIAÇÃO E NOTAS POR MÓDULO</h1>
+        </div>
+      </div>
+
+      <!-- Filtros de Turma e Módulo -->
+      <div class="card filters-card mb-4">
+        <div class="filters-grid">
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-users"></i> Turma do Núcleo</label>
+            <select class="form-select" [(ngModel)]="selectedTurmaId" (change)="onTurmaChange()">
+              <option *ngFor="let t of turmas" [value]="t.id">
+                {{ t.nome_turma }} ({{ t.polo_nome }})
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-book-open"></i> Módulo Curricular</label>
+            <select class="form-select" [(ngModel)]="selectedModuloId" (change)="carregarNotas()">
+              <option *ngFor="let m of modulos" [value]="m.id">
+                {{ m.nome_modulo }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Matriz de Lançamento de Notas -->
+      <div class="card" *ngIf="notas.length > 0">
+        <div class="card-header-bordered">
+          <div>
+            <h3><i class="fa-solid fa-pen-to-square"></i> Matriz de Lançamento de Avaliações</h3>
+            <p class="text-muted">Insira a nota obtida pelo aluno no módulo selecionado (0 a 10).</p>
+          </div>
+          <span class="badge badge-olive">Média de Aprovação: 7.0</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table-custom">
+            <thead>
+              <tr>
+                <th>Estudante</th>
+                <th>Módulo Avaliado</th>
+                <th style="width: 140px;">Nota (0.0 - 10.0)</th>
+                <th>Situação do Aluno</th>
+                <th>Observações do Professor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of notas">
+                <td>
+                  <strong>{{ item.aluno_nome }}</strong>
+                </td>
+                <td>{{ item.modulo_nome }}</td>
+                <td>
+                  <input 
+                    type="number" 
+                    step="0.1" 
+                    min="0" 
+                    max="10" 
+                    class="form-control input-nota" 
+                    [(ngModel)]="item.nota"
+                    (input)="recalcularSituacao(item)">
+                </td>
+                <td>
+                  <span 
+                    class="badge" 
+                    [class.badge-aprovado]="item.situacao === 'APROVADO'"
+                    [class.badge-recuperacao]="item.situacao === 'RECUPERACAO'"
+                    [class.badge-reprovado]="item.situacao === 'REPROVADO'">
+                    {{ item.situacao }}
+                  </span>
+                </td>
+                <td>
+                  <input type="text" class="form-control" [(ngModel)]="item.observacoes" placeholder="Feedback ou observação...">
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="action-footer">
+          <button class="btn btn-primary btn-lg" (click)="salvarNotas()">
+            <i class="fa-solid fa-floppy-disk"></i> Salvar Avaliações do Módulo
+          </button>
+        </div>
+      </div>
+    </div>
+  

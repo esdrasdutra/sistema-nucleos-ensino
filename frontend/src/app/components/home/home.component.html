@@ -1,0 +1,130 @@
+    <div class="home-page">
+      <!-- Main Split Hero Layout -->
+      <main class="container main-split-section">
+        
+        <!-- LADO ESQUERDO: Informações Institucionais do QGU UMADESPA -->
+        <div class="info-section">
+          <div class="header-tag">
+            <i class="fa-solid fa-cross"></i> UMADESPA & ENSINO TEOLÓGICO
+          </div>
+          
+          <h1 class="font-display hero-title">QGU — UMADESPA</h1>
+          <h2 class="hero-subtitle">QUARTEL GENERAL DE ENSINO & QUALIFICAÇÃO DE LÍDERES</h2>
+          
+          <p class="hero-description">
+            O <strong>QGU (Quartel General UMADESPA)</strong> é a plataforma oficial de gestão de núcleos de ensino teológico e formação ministerial. Desenvolvido para unificar a capacitação acadêmica, acompanhamento de assiduidade e desenvolvimento espiritual dos estudantes e líderes locais.
+          </p>
+
+          <!-- Cards das Atividades Desenvolvidas -->
+          <div class="atividades-grid">
+            <div class="atividade-card">
+              <div class="atividade-icon"><i class="fa-solid fa-book-bible"></i></div>
+              <div>
+                <span class="atividade-title">Formação Teológica Unificada</span>
+                <span class="atividade-desc">Grade curricular estruturada com módulos de Bibliologia, Teologia e Homilética.</span>
+              </div>
+            </div>
+
+            <div class="atividade-card">
+              <div class="atividade-icon"><i class="fa-solid fa-sitemap"></i></div>
+              <div>
+                <span class="atividade-title">Gestão Descentralizada de Polos</span>
+                <span class="atividade-desc">Supervisão de núcleos regionais e congregacionais com gestores dedicados.</span>
+              </div>
+            </div>
+
+            <div class="atividade-card">
+              <div class="atividade-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+              <div>
+                <span class="atividade-title">Chamada Digital & Avaliação</span>
+                <span class="atividade-desc">Frequência mobile em sala de aula e boletim de acompanhamento por módulo.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LADO DIREITO: Form de Login Integrado -->
+        <div class="login-section">
+          <div class="card login-card">
+            <div class="login-card-header">
+              <div class="login-badge-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <h3 class="font-display login-title">ACESSO AO SISTEMA</h3>
+              <p class="login-subtitle">Entre com suas credenciais para acessar a plataforma</p>
+            </div>
+
+            <form (ngSubmit)="realizarLogin()">
+              <!-- Seletor de Perfil de Acesso -->
+              <div class="form-group">
+                <label class="form-label">Perfil de Acesso</label>
+                <div class="role-selector-tabs">
+                  <button 
+                    type="button"
+                    class="tab-role"
+                    [class.active]="selectedRole === 'ADMIN'"
+                    (click)="selectRole('ADMIN')">
+                    Admin
+                  </button>
+                  <button 
+                    type="button"
+                    class="tab-role"
+                    [class.active]="selectedRole === 'GESTOR_NUCLEO'"
+                    (click)="selectRole('GESTOR_NUCLEO')">
+                    Gestor
+                  </button>
+                  <button 
+                    type="button"
+                    class="tab-role"
+                    [class.active]="selectedRole === 'ALUNO'"
+                    (click)="selectRole('ALUNO')">
+                    Aluno
+                  </button>
+                </div>
+              </div>
+
+              <!-- Campo E-mail -->
+              <div class="form-group">
+                <label class="form-label">E-mail ou Usuário</label>
+                <div class="input-with-icon">
+                  <i class="fa-solid fa-envelope input-icon"></i>
+                  <input 
+                    type="email" 
+                    class="form-control input-has-icon" 
+                    [(ngModel)]="emailInput" 
+                    name="email" 
+                    placeholder="seu.email@denomimacao.org" 
+                    required>
+                </div>
+              </div>
+
+              <!-- Campo Senha -->
+              <div class="form-group">
+                <label class="form-label">Senha de Acesso</label>
+                <div class="input-with-icon">
+                  <i class="fa-solid fa-lock input-icon"></i>
+                  <input 
+                    type="password" 
+                    class="form-control input-has-icon" 
+                    [(ngModel)]="senhaInput" 
+                    name="senha" 
+                    placeholder="••••••••" 
+                    required>
+                </div>
+              </div>
+
+              <!-- Botão de Login com Cores do Cliente (#123D00) -->
+              <button type="submit" class="btn btn-primary btn-block btn-login">
+                <i class="fa-solid fa-right-to-bracket"></i> Acessar Plataforma
+              </button>
+
+              <div class="login-footer">
+                <span class="support-text">Precisa de ajuda ou acesso? Contate a secretaria do QGU.</span>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  

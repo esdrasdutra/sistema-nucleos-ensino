@@ -1,0 +1,74 @@
+    <header class="navbar-header">
+      <div class="container navbar-container">
+        <!-- Brand / Logotipo -->
+        <div class="navbar-brand">
+          <div class="brand-icon">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div class="brand-text">
+            <span class="brand-title">QGU - UMADESPA</span>
+            <span class="brand-subtitle">GESTAO TEOLOGICA & NÚCLEOS</span>
+          </div>
+        </div>
+
+        <!-- Links de Navegação Interna (Visíveis após Login) -->
+        <nav class="navbar-menu">
+          <a routerLink="/dashboard" routerLinkActive="active" *ngIf="session.perfil === 'ADMIN' || session.perfil === 'GESTOR_NUCLEO'" class="nav-link">
+            <i class="fa-solid fa-chart-pie"></i> Dashboard
+          </a>
+          <a routerLink="/polos" routerLinkActive="active" *ngIf="session.perfil === 'ADMIN' || session.perfil === 'GESTOR_NUCLEO'" class="nav-link">
+            <i class="fa-solid fa-building-columns"></i> Polos & Turmas
+          </a>
+          <a routerLink="/chamada" routerLinkActive="active" *ngIf="session.perfil === 'ADMIN' || session.perfil === 'GESTOR_NUCLEO'" class="nav-link">
+            <i class="fa-solid fa-clipboard-user"></i> Chamada Digital
+          </a>
+          <a routerLink="/avaliacoes" routerLinkActive="active" *ngIf="session.perfil === 'ADMIN' || session.perfil === 'GESTOR_NUCLEO'" class="nav-link">
+            <i class="fa-solid fa-award"></i> Avaliações / Notas
+          </a>
+          <a routerLink="/portal-aluno" routerLinkActive="active" class="nav-link">
+            <i class="fa-solid fa-user-graduate"></i> Portal do Aluno
+          </a>
+        </nav>
+
+        <!-- Seletor de Perfil Demo & User Profile com Botão Sair -->
+        <div class="navbar-profile-section">
+          <div class="profile-switcher">
+            <span class="switcher-label">Perfil Ativo:</span>
+            <div class="btn-group-profile">
+              <button 
+                class="btn-profile" 
+                [class.active]="session.perfil === 'ADMIN'"
+                (click)="switchRole('ADMIN')">
+                Admin
+              </button>
+              <button 
+                class="btn-profile" 
+                [class.active]="session.perfil === 'GESTOR_NUCLEO'"
+                (click)="switchRole('GESTOR_NUCLEO')">
+                Gestor
+              </button>
+              <button 
+                class="btn-profile" 
+                [class.active]="session.perfil === 'ALUNO'"
+                (click)="switchRole('ALUNO')">
+                Aluno
+              </button>
+            </div>
+          </div>
+
+          <div class="user-badge">
+            <i class="fa-solid fa-circle-user avatar-icon"></i>
+            <div class="user-info">
+              <span class="user-name">{{ session.nome }}</span>
+              <span class="user-role badge-role">{{ getRoleBadgeText(session.perfil) }}</span>
+            </div>
+          </div>
+
+          <!-- Botão Sair (Voltar para Home / Login) -->
+          <button class="btn btn-secondary btn-sm btn-logout" (click)="realizarLogout()" title="Sair do Sistema">
+            <i class="fa-solid fa-power-off"></i> Sair
+          </button>
+        </div>
+      </div>
+    </header>
+  

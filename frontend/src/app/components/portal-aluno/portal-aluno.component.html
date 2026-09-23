@@ -1,0 +1,88 @@
+    <div class="portal-page container">
+      <!-- Header com Destaque Institucional -->
+      <div class="portal-header card">
+        <div class="header-left">
+          <span class="sub-headline"><i class="fa-solid fa-graduation-cap"></i> ÁREA EXCLUSIVA DO ESTUDANTE</span>
+          <h1 class="font-display main-headline">PORTAL DO ALUNO & BOLETIM</h1>
+          <p class="aluno-subinfo" *ngIf="boletim">
+            <strong>{{ boletim.aluno_nome }}</strong> — {{ boletim.curso_nome }} | {{ boletim.polo_nome }}
+          </p>
+        </div>
+
+        <div class="student-selector">
+          <label class="form-label">Simular Aluno:</label>
+          <select class="form-select" [(ngModel)]="selectedAlunoId" (change)="carregarBoletim()">
+            <option *ngFor="let a of todosAlunos" [value]="a.id">
+              {{ a.nome }} ({{ a.polo_nome }})
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Cards de Métricas Acadêmicas em Morganite -->
+      <div class="metrics-grid mb-4" *ngIf="boletim">
+        <div class="kpi-card">
+          <span class="kpi-title">Média Ponderada Geral</span>
+          <div class="kpi-value">{{ boletim.media_geral }}</div>
+          <span class="kpi-subtext">Rendimento de 0 a 10</span>
+        </div>
+
+        <div class="kpi-card kpi-olive">
+          <span class="kpi-title">Taxa de Assiduidade</span>
+          <div class="kpi-value">{{ boletim.frequencia_percentual }}%</div>
+          <span class="kpi-subtext">{{ boletim.total_presencas }} de {{ boletim.total_aulas }} Aulas Presentes</span>
+        </div>
+
+        <div class="kpi-card">
+          <span class="kpi-title">Status Geral Acadêmico</span>
+          <div class="kpi-status-badge">
+            <span class="badge badge-aprovado" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+              <i class="fa-solid fa-circle-check"></i> {{ boletim.status_geral }}
+            </span>
+          </div>
+          <span class="kpi-subtext">Situação de Matrícula: ATIVA</span>
+        </div>
+      </div>
+
+      <!-- Tabela do Boletim Escolar por Módulo -->
+      <div class="card" *ngIf="boletim">
+        <div class="card-header-bordered">
+          <h3><i class="fa-solid fa-list-check"></i> Histórico de Módulos e Desempenho</h3>
+          <span class="badge badge-olive">Grade Curricular Teológica</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table-custom">
+            <thead>
+              <tr>
+                <th>Módulo Curricular</th>
+                <th>Nota Obtida</th>
+                <th>Status do Módulo</th>
+                <th>Requisito de Aprovação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let m of boletim.notas_modulos">
+                <td><strong>{{ m.modulo_nome }}</strong></td>
+                <td>
+                  <span class="nota-destaque" [class.nota-alta]="m.nota >= 7.0">
+                    {{ m.nota > 0 ? m.nota : 'Pendente' }}
+                  </span>
+                </td>
+                <td>
+                  <span 
+                    class="badge" 
+                    [class.badge-aprovado]="m.situacao === 'APROVADO'"
+                    [class.badge-recuperacao]="m.situacao === 'RECUPERACAO'"
+                    [class.badge-reprovado]="m.situacao === 'REPROVADO'">
+                    {{ m.situacao }}
+                  </span>
+                </td>
+                <td>Nota mínima >= 7.0 + Frequência mínima 75%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  

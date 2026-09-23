@@ -1,0 +1,102 @@
+    <div class="dashboard-page container">
+      <!-- Header do Dashboard com Tipografia Morganite -->
+      <div class="dashboard-header">
+        <div>
+          <span class="sub-headline"><i class="fa-solid fa-chart-line"></i> PAINEL ADMINISTRATIVO</span>
+          <h1 class="font-display main-headline">PANORAMA GERAL DOS NÚCLEOS TEOLÓGICOS</h1>
+        </div>
+        <button class="btn btn-secondary btn-sm" (click)="reloadSeed()">
+          <i class="fa-solid fa-rotate-right"></i> Resetar Dados de Demo
+        </button>
+      </div>
+
+      <!-- KPI Grid com Tipografia Gigante em Morganite -->
+      <div class="kpi-grid" *ngIf="overview">
+        <div class="kpi-card">
+          <span class="kpi-title">Polos de Ensino</span>
+          <div class="kpi-value">{{ overview.total_polos }}</div>
+          <span class="kpi-subtext"><i class="fa-solid fa-location-dot"></i> Núcleos Ativos</span>
+        </div>
+
+        <div class="kpi-card kpi-olive">
+          <span class="kpi-title">Turmas em Andamento</span>
+          <div class="kpi-value">{{ overview.total_turmas }}</div>
+          <span class="kpi-subtext"><i class="fa-solid fa-book-open"></i> Grade Curricular</span>
+        </div>
+
+        <div class="kpi-card">
+          <span class="kpi-title">Alunos Matriculados</span>
+          <div class="kpi-value">{{ overview.total_alunos }}</div>
+          <span class="kpi-subtext"><i class="fa-solid fa-user-graduate"></i> Estudantes de Teologia</span>
+        </div>
+
+        <div class="kpi-card kpi-olive">
+          <span class="kpi-title">Presença Global Média</span>
+          <div class="kpi-value">{{ overview.frequencia_media_global }}%</div>
+          <span class="kpi-subtext"><i class="fa-solid fa-calendar-check"></i> Assiduidade nos Núcleos</span>
+        </div>
+
+        <div class="kpi-card">
+          <span class="kpi-title">Média Acadêmica Geral</span>
+          <div class="kpi-value">{{ overview.media_notas_global }}</div>
+          <span class="kpi-subtext"><i class="fa-solid fa-star"></i> Desempenho dos Módulos</span>
+        </div>
+      </div>
+
+      <!-- Seção de Tabelas Analíticas -->
+      <div class="analytics-grid" *ngIf="overview">
+        <!-- Ranking de Frequência por Polo -->
+        <div class="card">
+          <div class="card-header-bordered">
+            <h3><i class="fa-solid fa-ranking-star"></i> Assiduidade e Presença por Polo EAD</h3>
+            <span class="badge badge-olive">Atualizado em Tempo Real</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table-custom">
+              <thead>
+                <tr>
+                  <th>Polo de Ensino</th>
+                  <th>Cidade / Estado</th>
+                  <th>Assiduidade (%)</th>
+                  <th>Progresso Visual</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let polo of overview.ranking_frequencia_polo">
+                  <td><strong>{{ polo.polo_nome }}</strong></td>
+                  <td>{{ polo.cidade }}</td>
+                  <td><span class="badge badge-aprovado">{{ polo.taxa_presenca }}%</span></td>
+                  <td style="width: 40%;">
+                    <div class="progress-bar-bg">
+                      <div class="progress-bar-fill" [style.width.%]="polo.taxa_presenca"></div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Distribuição de Alunos por Polo -->
+        <div class="card">
+          <div class="card-header-bordered">
+            <h3><i class="fa-solid fa-chart-pie"></i> Distribuição de Estudantes</h3>
+            <span class="badge badge-sucesso">Capacidade dos Núcleos</span>
+          </div>
+
+          <div class="polo-distribution-list">
+            <div class="dist-item" *ngFor="let dist of overview.distribuicao_alunos_polo">
+              <div class="dist-info">
+                <span class="dist-name">{{ dist.polo_nome }}</span>
+                <span class="dist-count">{{ dist.total_alunos }} Alunos</span>
+              </div>
+              <div class="dist-bar-bg">
+                <div class="dist-bar-fill" [style.width.%]="(dist.total_alunos / overview.total_alunos) * 100"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  

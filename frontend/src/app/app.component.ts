@@ -8,63 +8,8 @@ import { filter } from 'rxjs/operators';
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, RouterOutlet, NavbarComponent],
-  template: `
-    <div class="app-layout">
-      <!-- Exibe a Navbar somente APÓS o login (oculta na Home) -->
-      <app-navbar *ngIf="showNavbar"></app-navbar>
-
-      <main class="main-content">
-        <router-outlet></router-outlet>
-      </main>
-
-      <footer class="app-footer">
-        <div class="container footer-content">
-          <p>© 2026 QGU - UMADESPA — Sistema de Gestão de Núcleos de Ensino Teológico.</p>
-          <span class="footer-tagline">Desenvolvido com excelência técnica e fidelidade de marca.</span>
-        </div>
-      </footer>
-    </div>
-  `,
-  styles: [`
-    .app-layout {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      background-color: var(--bg-page);
-    }
-
-    .main-content {
-      flex: 1;
-      background-color: var(--bg-page);
-    }
-
-    .app-footer {
-      background-color: var(--color-green-02);
-      color: rgba(255, 255, 255, 0.8);
-      padding: 1.5rem 0;
-      border-top: 3px solid var(--color-olive-soft);
-      font-size: 0.85rem;
-    }
-
-    .footer-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .footer-tagline {
-      color: var(--color-olive-soft);
-      font-weight: 600;
-    }
-
-    @media (max-width: 768px) {
-      .footer-content {
-        flex-direction: column;
-        gap: 0.5rem;
-        text-align: center;
-      }
-    }
-  `]
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
   showNavbar = false;

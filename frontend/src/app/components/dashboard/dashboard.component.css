@@ -1,0 +1,106 @@
+    .dashboard-page {
+      padding-top: 2rem;
+      padding-bottom: 3rem;
+    }
+
+    .dashboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .sub-headline {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--color-olive-soft);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .main-headline {
+      font-size: 2.8rem;
+      margin-top: 0.2rem;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-subtext {
+      font-size: 0.775rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 1.75rem;
+    }
+
+    @media (max-width: 992px) {
+      .analytics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .progress-bar-bg {
+      height: 10px;
+      background-color: var(--color-olive-light);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      border: 1px solid var(--border-olive);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-green-01), var(--color-olive-soft));
+      border-radius: var(--radius-full);
+    }
+
+    .polo-distribution-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .dist-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .dist-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .dist-name {
+      color: var(--color-green-02);
+    }
+
+    .dist-count {
+      color: var(--color-green-01);
+      font-weight: 700;
+    }
+
+    .dist-bar-bg {
+      height: 8px;
+      background-color: var(--border-subtle);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .dist-bar-fill {
+      height: 100%;
+      background-color: var(--color-green-01);
+      border-radius: var(--radius-full);
+    }
+  

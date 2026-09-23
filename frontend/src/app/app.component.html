@@ -1,0 +1,16 @@
+    <div class="app-layout">
+      <!-- Exibe a Navbar somente APÓS o login (oculta na Home) -->
+      <app-navbar *ngIf="showNavbar"></app-navbar>
+
+      <main class="main-content">
+        <router-outlet></router-outlet>
+      </main>
+
+      <footer class="app-footer">
+        <div class="container footer-content">
+          <p class="footer-text">© 2026 QGU - UMADESPA — Sistema de Gestão de Núcleos de Ensino Teológico.</p>
+          <span class="footer-tagline">Desenvolvido com excelência técnica e fidelidade de marca.</span>
+        </div>
+      </footer>
+    </div>
+  
