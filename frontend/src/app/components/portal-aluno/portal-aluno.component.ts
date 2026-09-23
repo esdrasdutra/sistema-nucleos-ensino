@@ -23,7 +23,8 @@ export class PortalAlunoComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.apiService.getAlunos().subscribe(alunosData => {
+    const poloId = this.authService.getCurrentSession().poloId;
+    this.apiService.getAlunos(poloId).subscribe(alunosData => {
       this.todosAlunos = alunosData;
       const current = this.authService.getCurrentSession();
       if (current.alunoId) {

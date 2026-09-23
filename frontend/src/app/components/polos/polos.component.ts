@@ -42,8 +42,9 @@ export class PolosComponent implements OnInit {
   }
 
   loadData() {
-    this.apiService.getPolos().subscribe(data => this.polos = data);
-    this.apiService.getTurmas().subscribe(data => this.turmas = data);
+    const poloId = this.authService.getCurrentSession().poloId;
+    this.apiService.getPolos(poloId).subscribe(data => this.polos = data);
+    this.apiService.getTurmas(poloId).subscribe(data => this.turmas = data);
   }
 
   openModalCriar() {

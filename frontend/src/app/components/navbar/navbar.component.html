@@ -1,5 +1,5 @@
     <header class="navbar-header">
-      <div class="container navbar-container">
+      <div class="navbar-container">
         <!-- Brand / Logotipo -->
         <div class="navbar-brand">
           <div class="brand-icon">
@@ -13,16 +13,16 @@
 
         <!-- Links de Navegação Interna (Visíveis após Login) -->
         <nav class="navbar-menu">
-          <a routerLink="/dashboard" routerLinkActive="active" *ngIf="session.perfil === 'ADMIN' || session.perfil === 'GESTOR_NUCLEO'" class="nav-link">
+          <a routerLink="/dashboard" routerLinkActive="active" *ngIf="isAdmin()" class="nav-link">
             <i class="fa-solid fa-chart-pie"></i> Dashboard
           </a>
-          <a routerLink="/polos" routerLinkActive="active" *ngIf="session.perfil === 'ADMIN' || session.perfil === 'GESTOR_NUCLEO'" class="nav-link">
-            <i class="fa-solid fa-building-columns"></i> Polos & Turmas
+          <a routerLink="/polos" routerLinkActive="active" *ngIf="isAdmin() || isGestor()" class="nav-link">
+            <i class="fa-solid fa-building-columns"></i> {{ isGestor() ? 'Meu Núcleo' : 'Polos & Turmas' }}
           </a>
-          <a routerLink="/chamada" routerLinkActive="active" *ngIf="session.perfil === 'ADMIN' || session.perfil === 'GESTOR_NUCLEO'" class="nav-link">
+          <a routerLink="/chamada" routerLinkActive="active" *ngIf="isAdmin() || isGestor()" class="nav-link">
             <i class="fa-solid fa-clipboard-user"></i> Chamada Digital
           </a>
-          <a routerLink="/avaliacoes" routerLinkActive="active" *ngIf="session.perfil === 'ADMIN' || session.perfil === 'GESTOR_NUCLEO'" class="nav-link">
+          <a routerLink="/avaliacoes" routerLinkActive="active" *ngIf="isAdmin() || isGestor()" class="nav-link">
             <i class="fa-solid fa-award"></i> Avaliações / Notas
           </a>
           <a routerLink="/portal-aluno" routerLinkActive="active" class="nav-link">

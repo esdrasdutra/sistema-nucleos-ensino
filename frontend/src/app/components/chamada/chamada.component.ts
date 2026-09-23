@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 import { Turma, SessaoChamada, ItemAlunoChamada } from '../../models/interfaces';
 
 @Component({
@@ -17,10 +18,14 @@ export class ChamadaComponent implements OnInit {
   selectedData: string = new Date().toISOString().split('T')[0];
   sessao: SessaoChamada | null = null;
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
-    this.apiService.getTurmas().subscribe(data => {
+    const poloId = this.authService.getCurrentSession().poloId;
+    this.apiService.getTurmas(poloId).subscribe(data => {
       this.turmas = data;
       if (this.turmas.length > 0) {
         this.selectedTurmaId = this.turmas[0].id;

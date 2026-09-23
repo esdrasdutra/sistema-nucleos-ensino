@@ -49,6 +49,29 @@ if os.path.exists(FRONTEND_DIR):
 def get_current_user_role(x_user_role: Optional[str] = Header("ADMIN")) -> str:
     return (x_user_role or "ADMIN").upper()
 
+def get_current_user_polo_id(x_user_polo_id: Optional[str] = Header(None)) -> Optional[int]:
+    try:
+        return int(x_user_polo_id) if x_user_polo_id else None
+    except ValueError:
+        return None
+
+def apply_polo_scope(query, model, user_role: str, requested_polo_id: Optional[int], user_polo_id: Optional[int]):
+    if user_role == "GESTOR_NUCLEO":
+        if not user_polo_id:
+            raise HTTPException(status_code=403, detail="Gestor sem núcleo associado")
+        return query.filter(model.polo_id == user_polo_id)
+    if requested_polo_id:
+        return query.filter(model.polo_id == requested_polo_id)
+    return query
+
+def ensure_turma_scope(turma_id: int, user_role: str, user_polo_id: Optional[int], db: Session) -> Turma:
+    turma = db.query(Turma).filter(Turma.id == turma_id).first()
+    if not turma:
+        raise HTTPException(status_code=404, detail="Turma não encontrada")
+    if user_role == "GESTOR_NUCLEO" and turma.polo_id != user_polo_id:
+        raise HTTPException(status_code=403, detail="A turma não pertence ao núcleo do gestor")
+    return turma
+
 # Factory de Permissão RBAC por Perfis Permitidos
 def require_roles(allowed_roles: List[str]):
     def role_checker(user_role: str = Depends(get_current_user_role)):
@@ -83,8 +106,8 @@ def listar_usuarios(perfil: Optional[str] = None, db: Session = Depends(get_db))
 
 # --- POLOS (CRUD COMPLETO + RBAC) ---
 @app.get("/api/v1/polos", response_model=List[PoloOut])
-def listar_polos(db: Session = Depends(get_db)):
-    polos = db.query(Polo).all()
+def listar_polos(polo_id: Optional[int] = None, user_role: str = Depends(get_current_user_role), user_polo_id: Optional[int] = Depends(get_current_user_polo_id), db: Session = Depends(get_db)):
+    polos = apply_polo_scope(db.query(Polo), Polo, user_role, polo_id, user_polo_id).all()
     resultado = []
     for p in polos:
         resp_nome = p.responsavel.nome if p.responsavel else "Sem Responsável"
@@ -154,11 +177,8 @@ def deletar_polo(polo_id: int, db: Session = Depends(get_db)):
 
 # --- TURMAS (CRUD COMPLETO + RBAC) ---
 @app.get("/api/v1/turmas", response_model=List[TurmaOut])
-def listar_turmas(polo_id: Optional[int] = None, db: Session = Depends(get_db)):
-    query = db.query(Turma)
-    if polo_id:
-        query = query.filter(Turma.polo_id == polo_id)
-    turmas = query.all()
+def listar_turmas(polo_id: Optional[int] = None, user_role: str = Depends(get_current_user_role), user_polo_id: Optional[int] = Depends(get_current_user_polo_id), db: Session = Depends(get_db)):
+    turmas = apply_polo_scope(db.query(Turma), Turma, user_role, polo_id, user_polo_id).all()
     resultado = []
     for t in turmas:
         tot_aln = db.query(Matricula).filter(Matricula.turma_id == t.id, Matricula.status_matricula == "ATIVO").count()
@@ -224,10 +244,8 @@ def deletar_turma(turma_id: int, db: Session = Depends(get_db)):
 
 # --- ALUNOS (CRUD COMPLETO + RBAC) ---
 @app.get("/api/v1/alunos", response_model=List[AlunoOut])
-def listar_alunos(polo_id: Optional[int] = None, turma_id: Optional[int] = None, db: Session = Depends(get_db)):
-    query = db.query(Aluno)
-    if polo_id:
-        query = query.filter(Aluno.polo_id == polo_id)
+def listar_alunos(polo_id: Optional[int] = None, turma_id: Optional[int] = None, user_role: str = Depends(get_current_user_role), user_polo_id: Optional[int] = Depends(get_current_user_polo_id), db: Session = Depends(get_db)):
+    query = apply_polo_scope(db.query(Aluno), Aluno, user_role, polo_id, user_polo_id)
     if turma_id:
         query = query.join(Matricula).filter(Matricula.turma_id == turma_id)
 
@@ -321,7 +339,8 @@ def listar_cursos(db: Session = Depends(get_db)):
 
 # --- CHAMADA DIGITAL (FREQUÊNCIA) ---
 @app.get("/api/v1/frequencia/sessao")
-def obter_sessao_chamada(turma_id: int, data_aula: str, db: Session = Depends(get_db)):
+def obter_sessao_chamada(turma_id: int, data_aula: str, user_role: str = Depends(get_current_user_role), user_polo_id: Optional[int] = Depends(get_current_user_polo_id), db: Session = Depends(get_db)):
+    ensure_turma_scope(turma_id, user_role, user_polo_id, db)
     sessao = db.query(SessaoAula).filter(SessaoAula.turma_id == turma_id, SessaoAula.data_aula == data_aula).first()
     matriculas = db.query(Matricula).filter(Matricula.turma_id == turma_id, Matricula.status_matricula == "ATIVO").all()
     alunos_turma = [m.aluno for m in matriculas]
@@ -351,7 +370,8 @@ def obter_sessao_chamada(turma_id: int, data_aula: str, db: Session = Depends(ge
     }
 
 @app.post("/api/v1/frequencia/registrar", dependencies=[Depends(require_roles(["ADMIN", "GESTOR_NUCLEO"]))])
-def registrar_chamada(dados: RegistrarChamadaRequest, db: Session = Depends(get_db)):
+def registrar_chamada(dados: RegistrarChamadaRequest, user_role: str = Depends(get_current_user_role), user_polo_id: Optional[int] = Depends(get_current_user_polo_id), db: Session = Depends(get_db)):
+    ensure_turma_scope(dados.turma_id, user_role, user_polo_id, db)
     sessao = db.query(SessaoAula).filter(SessaoAula.turma_id == dados.turma_id, SessaoAula.data_aula == dados.data_aula).first()
     if not sessao:
         sessao = SessaoAula(
@@ -377,7 +397,8 @@ def registrar_chamada(dados: RegistrarChamadaRequest, db: Session = Depends(get_
 
 # --- AVALIAÇÕES / NOTAS ---
 @app.get("/api/v1/avaliacoes", response_model=List[NotaOut])
-def obter_notas_turma(turma_id: int, modulo_id: int, db: Session = Depends(get_db)):
+def obter_notas_turma(turma_id: int, modulo_id: int, user_role: str = Depends(get_current_user_role), user_polo_id: Optional[int] = Depends(get_current_user_polo_id), db: Session = Depends(get_db)):
+    ensure_turma_scope(turma_id, user_role, user_polo_id, db)
     matriculas = db.query(Matricula).filter(Matricula.turma_id == turma_id, Matricula.status_matricula == "ATIVO").all()
     modulo = db.query(Modulo).get(modulo_id)
     if not modulo:
@@ -415,7 +436,8 @@ def obter_notas_turma(turma_id: int, modulo_id: int, db: Session = Depends(get_d
     return resultado
 
 @app.post("/api/v1/avaliacoes/registrar", dependencies=[Depends(require_roles(["ADMIN", "GESTOR_NUCLEO"]))])
-def registrar_notas(dados: LancarNotaRequest, db: Session = Depends(get_db)):
+def registrar_notas(dados: LancarNotaRequest, user_role: str = Depends(get_current_user_role), user_polo_id: Optional[int] = Depends(get_current_user_polo_id), db: Session = Depends(get_db)):
+    ensure_turma_scope(dados.turma_id, user_role, user_polo_id, db)
     for item in dados.notas:
         nota_obj = db.query(NotaModulo).filter(
             NotaModulo.aluno_id == item.aluno_id,
@@ -517,7 +539,7 @@ def obter_boletim_aluno(aluno_id: int, db: Session = Depends(get_db)):
     )
 
 # --- ANALYTICS / DASHBOARD ---
-@app.get("/api/v1/analytics/overview", response_model=DashboardOverviewOut)
+@app.get("/api/v1/analytics/overview", response_model=DashboardOverviewOut, dependencies=[Depends(require_roles(["ADMIN"]))])
 def obter_dashboard_analytics(db: Session = Depends(get_db)):
     tot_polos = db.query(Polo).count()
     tot_turmas = db.query(Turma).count()

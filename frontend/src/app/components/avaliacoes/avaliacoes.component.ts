@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 import { Turma, Curso, Modulo, NotaItem } from '../../models/interfaces';
 
 @Component({
@@ -18,10 +19,14 @@ export class AvaliacoesComponent implements OnInit {
   selectedModuloId: number = 1;
   notas: NotaItem[] = [];
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
-    this.apiService.getTurmas().subscribe(turmasData => {
+    const poloId = this.authService.getCurrentSession().poloId;
+    this.apiService.getTurmas(poloId).subscribe(turmasData => {
       this.turmas = turmasData;
       this.apiService.getCursos().subscribe(cursosData => {
         if (cursosData.length > 0 && cursosData[0].modulos) {

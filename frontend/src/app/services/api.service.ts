@@ -20,7 +20,8 @@ export class ApiService {
   private getHeaders(): HttpHeaders {
     const session = this.authService.getCurrentSession();
     return new HttpHeaders({
-      'X-User-Role': session.perfil || 'ADMIN'
+      'X-User-Role': session.perfil || 'ADMIN',
+      'X-User-Polo-ID': session.poloId?.toString() || ''
     });
   }
 
@@ -30,8 +31,10 @@ export class ApiService {
   }
 
   // Polos CRUD
-  getPolos(): Observable<Polo[]> {
-    return this.http.get<Polo[]>(`${this.apiUrl}/polos`);
+  getPolos(poloId?: number): Observable<Polo[]> {
+    let params = new HttpParams();
+    if (poloId) params = params.set('polo_id', poloId.toString());
+    return this.http.get<Polo[]>(`${this.apiUrl}/polos`, { params, headers: this.getHeaders() });
   }
 
   createPolo(polo: Partial<Polo>): Observable<Polo> {
@@ -55,7 +58,7 @@ export class ApiService {
   getTurmas(poloId?: number): Observable<Turma[]> {
     let params = new HttpParams();
     if (poloId) params = params.set('polo_id', poloId.toString());
-    return this.http.get<Turma[]>(`${this.apiUrl}/turmas`, { params });
+    return this.http.get<Turma[]>(`${this.apiUrl}/turmas`, { params, headers: this.getHeaders() });
   }
 
   createTurma(turma: Partial<Turma>): Observable<Turma> {
@@ -75,7 +78,7 @@ export class ApiService {
     let params = new HttpParams();
     if (poloId) params = params.set('polo_id', poloId.toString());
     if (turmaId) params = params.set('turma_id', turmaId.toString());
-    return this.http.get<Aluno[]>(`${this.apiUrl}/alunos`, { params });
+    return this.http.get<Aluno[]>(`${this.apiUrl}/alunos`, { params, headers: this.getHeaders() });
   }
 
   createAluno(aluno: { nome: string; email: string; telefone?: string; polo_id: number; turma_id?: number }): Observable<Aluno> {
@@ -95,7 +98,7 @@ export class ApiService {
     const params = new HttpParams()
       .set('turma_id', turmaId.toString())
       .set('data_aula', dataAula);
-    return this.http.get<SessaoChamada>(`${this.apiUrl}/frequencia/sessao`, { params });
+    return this.http.get<SessaoChamada>(`${this.apiUrl}/frequencia/sessao`, { params, headers: this.getHeaders() });
   }
 
   salvarChamada(payload: { turma_id: number; data_aula: string; conteudo?: string; presencas: { aluno_id: number; presente: boolean }[] }): Observable<any> {
@@ -111,7 +114,7 @@ export class ApiService {
     const params = new HttpParams()
       .set('turma_id', turmaId.toString())
       .set('modulo_id', moduloId.toString());
-    return this.http.get<NotaItem[]>(`${this.apiUrl}/avaliacoes`, { params });
+    return this.http.get<NotaItem[]>(`${this.apiUrl}/avaliacoes`, { params, headers: this.getHeaders() });
   }
 
   salvarNotas(payload: { turma_id: number; modulo_id: number; notas: { aluno_id: number; nota: number; observacoes?: string }[] }): Observable<any> {
@@ -129,6 +132,6 @@ export class ApiService {
 
   // Dashboard Overview
   getDashboardOverview(): Observable<DashboardOverview> {
-    return this.http.get<DashboardOverview>(`${this.apiUrl}/analytics/overview`);
+    return this.http.get<DashboardOverview>(`${this.apiUrl}/analytics/overview`, { headers: this.getHeaders() });
   }
 }

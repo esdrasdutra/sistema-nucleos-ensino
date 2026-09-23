@@ -29,6 +29,14 @@ export class NavbarComponent implements OnInit {
     this.authService.switchProfile(role);
   }
 
+  isAdmin(): boolean {
+    return this.session?.perfil === 'ADMIN';
+  }
+
+  isGestor(): boolean {
+    return this.session?.perfil === 'GESTOR_NUCLEO';
+  }
+
   getRoleBadgeText(perfil: PerfilUsuario): string {
     switch (perfil) {
       case 'ADMIN': return 'ADMIN';
