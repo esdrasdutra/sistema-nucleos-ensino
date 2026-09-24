@@ -6,9 +6,9 @@
           <h1 class="font-display">GESTÃO DE NÚCLEOS E RESPONSÁVEIS</h1>
         </div>
         <div class="d-flex gap-2">
-          <button class="btn btn-primary" (click)="openModalCriar()" *ngIf="isUserAdmin()">
+          <a class="btn btn-primary" routerLink="/criar-nucleo" *ngIf="isUserAdmin()">
             <i class="fa-solid fa-plus"></i> Novo Núcleo
-          </button>
+          </a>
           <button class="btn btn-secondary" (click)="openTurmaModal()" *ngIf="isUserAdmin() || isUserGestor()">
             <i class="fa-solid fa-plus"></i> Nova Turma
           </button>
@@ -200,7 +200,7 @@
               </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" *ngIf="!editandoId">
               <label class="form-label">Termos e condições</label>
               <div class="terms-box">
                 <p>

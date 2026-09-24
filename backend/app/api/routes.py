@@ -32,6 +32,7 @@ def register_routes(app, handlers=None):
     """Registra os endpoints mantendo handlers separados da composição da API."""
     app.add_api_route("/", system.read_root, methods=["GET"])
     app.add_api_route("/api/v1/seed", system.trigger_seed, methods=["POST"], status_code=status.HTTP_200_OK)
+    app.add_api_route("/api/v1/onboarding/nucleo", system.criar_nucleo_publico, methods=["POST"])
     app.add_api_route("/api/v1/usuarios", system.listar_usuarios, methods=["GET"], response_model=list[UsuarioOut])
 
     app.add_api_route("/api/v1/polos", polos.listar_polos, methods=["GET"], response_model=list[PoloOut])

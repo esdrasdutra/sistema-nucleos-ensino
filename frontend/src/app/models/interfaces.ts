@@ -9,6 +9,27 @@ export interface Usuario {
   data_criacao: string;
 }
 
+export interface CriarNucleoPayload {
+  nome_nucleo: string;
+  codigo: string;
+  cidade: string;
+  estado: string;
+  nome_responsavel: string;
+  email_responsavel: string;
+  senha: string;
+  telefone_responsavel?: string;
+  aceitou_termos: boolean;
+}
+
+export interface NucleoPublicoResult {
+  polo_id: number;
+  polo_nome: string;
+  usuario_id: number;
+  usuario_nome: string;
+  email: string;
+  perfil: PerfilUsuario;
+}
+
 export interface Polo {
   id: number;
   nome: string;

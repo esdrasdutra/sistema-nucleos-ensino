@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
-  Polo, Curso, Materia, Turma, Aluno, Usuario, SessaoChamada, NotaItem, BoletimAluno, HistoricoAluno, DashboardOverview
+  Polo, Curso, Materia, Turma, Aluno, Usuario, SessaoChamada, NotaItem, BoletimAluno, HistoricoAluno, DashboardOverview, CriarNucleoPayload, NucleoPublicoResult
 } from '../models/interfaces';
 import { AuthService } from './auth.service';
 
@@ -16,6 +16,10 @@ export class ApiService {
     private http: HttpClient,
     private authService: AuthService
   ) {}
+
+  criarNucleoPublico(payload: CriarNucleoPayload): Observable<NucleoPublicoResult> {
+    return this.http.post<NucleoPublicoResult>(`${this.apiUrl}/onboarding/nucleo`, payload);
+  }
 
   private getHeaders(): HttpHeaders {
     const session = this.authService.getCurrentSession();

@@ -1,0 +1,44 @@
+<main class="onboarding-shell">
+  <section class="onboarding-intro">
+    <a routerLink="/home" class="brand-link"><i class="fa-solid fa-cross"></i> QGU — UMADESPA</a>
+    <span class="eyebrow">NOVO NÚCLEO DE ENSINO</span>
+    <h1>Crie seu núcleo e comece a formar líderes.</h1>
+    <p>Cadastre a unidade, crie o acesso do responsável e entre direto na gestão acadêmica do seu núcleo.</p>
+    <div class="process-list">
+      <span><b>01</b> Dados do núcleo</span>
+      <span><b>02</b> Acesso do responsável</span>
+      <span><b>03</b> Gestão liberada</span>
+    </div>
+  </section>
+
+  <section class="onboarding-panel">
+    <div class="panel-heading">
+      <span class="eyebrow">CONFIGURAÇÃO INICIAL</span>
+      <h2>Cadastre seu núcleo</h2>
+      <p>Os campos marcados com * são obrigatórios.</p>
+    </div>
+
+    <form (ngSubmit)="submit()" #form="ngForm">
+      <div class="section-label">Identidade do núcleo</div>
+      <div class="form-grid">
+        <label class="form-group full"><span>Nome do núcleo *</span><input [(ngModel)]="payload.nome_nucleo" name="nome_nucleo" required placeholder="Ex.: Núcleo Salvador Centro"></label>
+        <label class="form-group"><span>Código único *</span><input [(ngModel)]="payload.codigo" name="codigo" required placeholder="NUC-SSA-01"></label>
+        <label class="form-group"><span>Cidade *</span><input [(ngModel)]="payload.cidade" name="cidade" required placeholder="Salvador"></label>
+        <label class="form-group"><span>Estado *</span><input [(ngModel)]="payload.estado" name="estado" required maxlength="2" placeholder="BA"></label>
+      </div>
+
+      <div class="section-label">Acesso do responsável</div>
+      <div class="form-grid">
+        <label class="form-group full"><span>Nome completo *</span><input [(ngModel)]="payload.nome_responsavel" name="nome_responsavel" required placeholder="Nome do responsável pelo núcleo"></label>
+        <label class="form-group"><span>E-mail de acesso *</span><input type="email" [(ngModel)]="payload.email_responsavel" name="email_responsavel" required placeholder="responsavel@exemplo.com"></label>
+        <label class="form-group"><span>Telefone</span><input [(ngModel)]="payload.telefone_responsavel" name="telefone_responsavel" placeholder="(00) 00000-0000"></label>
+        <label class="form-group full"><span>Senha *</span><input type="password" [(ngModel)]="payload.senha" name="senha" minlength="8" required placeholder="Mínimo de 8 caracteres"></label>
+      </div>
+
+      <label class="terms-row"><input type="checkbox" [(ngModel)]="payload.aceitou_termos" name="aceitou_termos" required><span>Li e concordo com os termos de uso e responsabilidade do núcleo.</span></label>
+      <p class="error-message" *ngIf="errorMessage"><i class="fa-solid fa-circle-exclamation"></i> {{ errorMessage }}</p>
+      <button class="btn btn-primary submit-button" type="submit" [disabled]="form.invalid || submitting"><i class="fa-solid" [class.fa-arrow-right]="!submitting" [class.fa-spinner]="submitting"></i>{{ submitting ? 'Criando núcleo...' : 'Criar núcleo e acessar' }}</button>
+      <a routerLink="/home" class="back-link">Já possui acesso? Voltar para o login</a>
+    </form>
+  </section>
+</main>

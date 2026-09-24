@@ -22,12 +22,13 @@ def get_current_user_polo_id(x_user_polo_id: Optional[str] = Header(None)) -> Op
 
 
 def apply_polo_scope(query, model, user_role: str, requested_polo_id: Optional[int], user_polo_id: Optional[int]):
+    scope_column = model.id if model is Polo else model.polo_id
     if user_role == "GESTOR_NUCLEO":
         if not user_polo_id:
             raise HTTPException(status_code=403, detail="Gestor sem núcleo associado")
-        return query.filter(model.polo_id == user_polo_id)
+        return query.filter(scope_column == user_polo_id)
     if requested_polo_id:
-        return query.filter(model.polo_id == requested_polo_id)
+        return query.filter(scope_column == requested_polo_id)
     return query
 
 

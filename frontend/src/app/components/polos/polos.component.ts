@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { Curso, Polo, Turma, Usuario } from '../../models/interfaces';
@@ -8,7 +9,7 @@ import { Curso, Polo, Turma, Usuario } from '../../models/interfaces';
 @Component({
   selector: 'app-polos',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './polos.component.html',
   styleUrls: ['./polos.component.css'],
 })
@@ -102,7 +103,7 @@ export class PolosComponent implements OnInit {
       return;
     }
 
-    if (!this.novoPolo.aceitou_termos) {
+    if (!this.editandoId && !this.novoPolo.aceitou_termos) {
       alert('É necessário aceitar os termos para criar o núcleo.');
       return;
     }

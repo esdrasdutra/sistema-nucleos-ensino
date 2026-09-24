@@ -199,4 +199,16 @@
       font-size: 0.775rem;
       color: var(--text-muted);
     }
+
+    .create-nucleo-link {
+      display: inline-block;
+      margin-top: 0.75rem;
+      color: var(--color-green-01);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .create-nucleo-link:hover {
+      text-decoration: underline;
+    }
   

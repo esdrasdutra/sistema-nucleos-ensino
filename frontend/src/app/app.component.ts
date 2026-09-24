@@ -22,7 +22,7 @@ export class AppComponent implements OnInit {
     ).subscribe((event: any) => {
       const url = event.urlAfterRedirects || event.url;
       // Oculta a navbar se a rota for /home ou /
-      this.showNavbar = !url.includes('/home') && url !== '/';
+      this.showNavbar = !url.includes('/home') && !url.includes('/criar-nucleo') && url !== '/';
     });
   }
 }

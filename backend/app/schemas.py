@@ -23,6 +23,27 @@ class UsuarioOut(UsuarioBase):
         from_attributes = True
 
 
+class CriarNucleoPublico(BaseModel):
+    nome_nucleo: str
+    codigo: str
+    cidade: str
+    estado: str
+    nome_responsavel: str
+    email_responsavel: str
+    senha: str
+    telefone_responsavel: Optional[str] = None
+    aceitou_termos: bool = False
+
+
+class NucleoPublicoOut(BaseModel):
+    polo_id: int
+    polo_nome: str
+    usuario_id: int
+    usuario_nome: str
+    email: str
+    perfil: str
+
+
 class PoloBase(BaseModel):
     nome: str
     codigo: str

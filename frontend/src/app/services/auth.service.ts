@@ -56,6 +56,11 @@ export class AuthService {
     }
   }
 
+  startGestorSession(session: UserSession) {
+    this.currentSessionSubject.next(session);
+    this.activeSessionSignal.set(session);
+  }
+
   getCurrentSession(): UserSession {
     return this.currentSessionSubject.value;
   }
