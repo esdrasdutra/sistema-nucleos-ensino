@@ -3,11 +3,16 @@
       <div class="page-header">
         <div>
           <span class="sub-headline"><i class="fa-solid fa-building-columns"></i> REDE DESCENTRALIZADA</span>
-          <h1 class="font-display">GESTÃO DE POLOS E RESPONSÁVEIS</h1>
+          <h1 class="font-display">GESTÃO DE NÚCLEOS E RESPONSÁVEIS</h1>
         </div>
-        <button class="btn btn-primary" (click)="openModalCriar()" *ngIf="isUserAdmin()">
-          <i class="fa-solid fa-plus"></i> Novo Polo de Ensino
-        </button>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary" (click)="openModalCriar()" *ngIf="isUserAdmin()">
+            <i class="fa-solid fa-plus"></i> Novo Núcleo
+          </button>
+          <button class="btn btn-secondary" (click)="openTurmaModal()" *ngIf="isUserAdmin() || isUserGestor()">
+            <i class="fa-solid fa-plus"></i> Nova Turma
+          </button>
+        </div>
       </div>
 
       <!-- Grid de Polos -->
@@ -65,7 +70,7 @@
             <thead>
               <tr>
                 <th>Nome da Turma</th>
-                <th>Polo / Núcleo</th>
+                <th>Núcleo</th>
                 <th>Professor / Preletor</th>
                 <th>Dia & Horário</th>
                 <th>Alunos</th>
@@ -82,9 +87,14 @@
                 <td><span class="badge badge-olive">{{ turma.total_alunos }} Alunos</span></td>
                 <td><span class="badge badge-sucesso">{{ turma.status }}</span></td>
                 <td *ngIf="isUserAdmin() || isUserGestor()">
-                  <button class="btn btn-secondary btn-sm" (click)="excluirTurma(turma)">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-secondary btn-sm" (click)="editarTurma(turma)">
+                      <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                    <button class="btn btn-secondary btn-sm" (click)="excluirTurma(turma)">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -92,23 +102,81 @@
         </div>
       </div>
 
+      <!-- Modal Criar / Editar Turma -->
+      <div class="modal-backdrop" *ngIf="showTurmaModal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h2 class="font-display">{{ editandoTurmaId ? 'Editar Turma' : 'Cadastrar Nova Turma' }}</h2>
+            <button class="close-btn" (click)="showTurmaModal = false">&times;</button>
+          </div>
+
+          <form (ngSubmit)="salvarTurma()">
+            <div class="form-group">
+              <label class="form-label">Núcleo</label>
+              <select class="form-select" [(ngModel)]="novaTurma.polo_id" name="polo_id" required>
+                <option [value]="undefined">Selecione o núcleo...</option>
+                <option *ngFor="let polo of polos" [value]="polo.id">
+                  {{ polo.nome }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Curso</label>
+              <select class="form-select" [(ngModel)]="novaTurma.curso_id" name="curso_id" required>
+                <option [value]="undefined">Selecione o curso...</option>
+                <option *ngFor="let curso of cursos" [value]="curso.id">
+                  {{ curso.nome }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Nome da Turma</label>
+              <input type="text" class="form-control" [(ngModel)]="novaTurma.nome_turma" name="nome_turma" placeholder="Ex: Turma Alpha 2026" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Professor / Preletor</label>
+              <input type="text" class="form-control" [(ngModel)]="novaTurma.professor" name="professor" placeholder="Ex: Pr. Carlos Eduardo" required>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Dia da Semana</label>
+                <input type="text" class="form-control" [(ngModel)]="novaTurma.dia_semana" name="dia_semana" placeholder="Terça-feira" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Horário</label>
+                <input type="text" class="form-control" [(ngModel)]="novaTurma.horario" name="horario" placeholder="19:00 - 21:30" required>
+              </div>
+            </div>
+
+            <div class="modal-actions">
+              <button type="button" class="btn btn-secondary" (click)="showTurmaModal = false">Cancelar</button>
+              <button type="submit" class="btn btn-primary">{{ editandoTurmaId ? 'Atualizar Turma' : 'Cadastrar Turma' }}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
       <!-- Modal Criar / Editar Polo -->
       <div class="modal-backdrop" *ngIf="showModal">
         <div class="modal-card">
           <div class="modal-header">
-            <h2 class="font-display">{{ editandoId ? 'Editar Polo de Ensino' : 'Cadastrar Novo Polo' }}</h2>
+            <h2 class="font-display">{{ editandoId ? 'Editar Núcleo' : 'Cadastrar Novo Núcleo' }}</h2>
             <button class="close-btn" (click)="showModal = false">&times;</button>
           </div>
 
           <form (ngSubmit)="salvarPolo()">
             <div class="form-group">
-              <label class="form-label">Nome do Polo / Núcleo</label>
-              <input type="text" class="form-control" [(ngModel)]="novoPolo.nome" name="nome" placeholder="Ex: Polo Salvador - Centro" required>
+              <label class="form-label">Nome do Núcleo</label>
+              <input type="text" class="form-control" [(ngModel)]="novoPolo.nome" name="nome" placeholder="Ex: Núcleo Salvador - Centro" required>
             </div>
 
             <div class="form-group">
               <label class="form-label">Código Único (Identificador)</label>
-              <input type="text" class="form-control" [(ngModel)]="novoPolo.codigo" name="codigo" placeholder="Ex: POLO-SSA-05" required>
+              <input type="text" class="form-control" [(ngModel)]="novoPolo.codigo" name="codigo" placeholder="Ex: NUC-SSA-05" required>
             </div>
 
             <div class="grid-2">
@@ -130,6 +198,20 @@
                   {{ gestor.nome }} ({{ gestor.email }})
                 </option>
               </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Termos e condições</label>
+              <div class="terms-box">
+                <p>
+                  Ao criar este núcleo, o gestor responsável assume a atribuição de acompanhamento de turmas,
+                  presença e avaliação acadêmica dos alunos vinculados ao núcleo.
+                </p>
+                <label class="checkbox-row">
+                  <input type="checkbox" [(ngModel)]="novoPolo.aceitou_termos" name="aceitou_termos">
+                  <span>Li e concordo com os termos do núcleo.</span>
+                </label>
+              </div>
             </div>
 
             <div class="modal-actions">

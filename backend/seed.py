@@ -1,5 +1,5 @@
 from database import Base, engine, SessionLocal
-from models import Usuario, Polo, Curso, Modulo, Turma, Aluno, Matricula, SessaoAula, Presenca, NotaModulo
+from models import Usuario, Polo, Curso, Materia, Modulo, Turma, Aluno, Matricula, SessaoAula, Presenca, NotaModulo
 from datetime import datetime, timedelta
 
 def seed_database():
@@ -45,34 +45,34 @@ def seed_database():
         db.add_all([admin, gestor_sp, gestor_rj, gestor_bh, gestor_cwb])
         db.commit()
 
-        # 2. Criar Polos / Núcleos
+        # 2. Criar Núcleos
         polo_sp = Polo(
-            nome="Polo Central São Paulo",
-            codigo="POLO-SP-01",
+            nome="Núcleo Central São Paulo",
+            codigo="NUCLEO-SP-01",
             cidade="São Paulo",
             estado="SP",
             responsavel_id=gestor_sp.id,
             status="ATIVO"
         )
         polo_rj = Polo(
-            nome="Polo Rio de Janeiro - Zona Sul",
-            codigo="POLO-RJ-02",
+            nome="Núcleo Rio de Janeiro - Zona Sul",
+            codigo="NUCLEO-RJ-02",
             cidade="Rio de Janeiro",
             estado="RJ",
             responsavel_id=gestor_rj.id,
             status="ATIVO"
         )
         polo_bh = Polo(
-            nome="Polo Belo Horizonte",
-            codigo="POLO-BH-03",
+            nome="Núcleo Belo Horizonte",
+            codigo="NUCLEO-BH-03",
             cidade="Belo Horizonte",
             estado="MG",
             responsavel_id=gestor_bh.id,
             status="ATIVO"
         )
         polo_cwb = Polo(
-            nome="Polo Curitiba",
-            codigo="POLO-CWB-04",
+            nome="Núcleo Curitiba",
+            codigo="NUCLEO-CWB-04",
             cidade="Curitiba",
             estado="PR",
             responsavel_id=gestor_cwb.id,
@@ -82,7 +82,14 @@ def seed_database():
         db.add_all([polo_sp, polo_rj, polo_bh, polo_cwb])
         db.commit()
 
-        # 3. Criar Cursos e Módulos
+        # 3. Criar Matérias base
+        materia1 = Materia(nome="Teologia Bíblica", codigo="TB-01", descricao="Estudo da Palavra de Deus e hermenêutica básica", status="ATIVA")
+        materia2 = Materia(nome="Liderança Ministerial", codigo="LM-02", descricao="Prática de liderança e cuidado pastoral", status="ATIVA")
+        materia3 = Materia(nome="História da Igreja", codigo="HI-03", descricao="Trajetória histórica e identidade da igreja", status="ATIVA")
+        db.add_all([materia1, materia2, materia3])
+        db.commit()
+
+        # 4. Criar Cursos e Módulos
         curso = Curso(
             nome="Bacharel em Teologia Prática e Liderança",
             descricao="Formação ministerial completa focada em interpretação bíblica, liderança de núcleos e teologia aplicada.",
@@ -100,7 +107,7 @@ def seed_database():
         db.add_all([mod1, mod2, mod3, mod4, mod5])
         db.commit()
 
-        # 4. Criar Turmas
+        # 5. Criar Turmas
         turma_sp = Turma(
             polo_id=polo_sp.id,
             curso_id=curso.id,
@@ -132,30 +139,30 @@ def seed_database():
         db.add_all([turma_sp, turma_rj, turma_bh])
         db.commit()
 
-        # 5. Criar Alunos e Usuários de Aluno
+        # 6. Criar Alunos e Usuários de Aluno
         lista_alunos_dados = [
             # SP
-            ("Gabriel Santos", "gabriel.santos@aluno.org", "(11) 98765-4321", polo_sp, turma_sp),
-            ("Mariana Oliveira", "mariana.oliveira@aluno.org", "(11) 97654-3210", polo_sp, turma_sp),
-            ("Lucas Ferreira", "lucas.ferreira@aluno.org", "(11) 96543-2109", polo_sp, turma_sp),
-            ("Beatriz Mendes", "beatriz.mendes@aluno.org", "(11) 95432-1098", polo_sp, turma_sp),
+            ("Gabriel Santos", "gabriel.santos@aluno.org", "(11) 98765-4321", polo_sp, turma_sp, "JOVEM"),
+            ("Mariana Oliveira", "mariana.oliveira@aluno.org", "(11) 97654-3210", polo_sp, turma_sp, "JOVEM"),
+            ("Lucas Ferreira", "lucas.ferreira@aluno.org", "(11) 96543-2109", polo_sp, turma_sp, "ADULTO"),
+            ("Beatriz Mendes", "beatriz.mendes@aluno.org", "(11) 95432-1098", polo_sp, turma_sp, "JOVEM"),
             # RJ
-            ("Felipe Rocha", "felipe.rocha@aluno.org", "(21) 98877-6655", polo_rj, turma_rj),
-            ("Camila Ribeiro", "camila.ribeiro@aluno.org", "(21) 97766-5544", polo_rj, turma_rj),
-            ("Thiago Martins", "thiago.martins@aluno.org", "(21) 96655-4433", polo_rj, turma_rj),
+            ("Felipe Rocha", "felipe.rocha@aluno.org", "(21) 98877-6655", polo_rj, turma_rj, "ADULTO"),
+            ("Camila Ribeiro", "camila.ribeiro@aluno.org", "(21) 97766-5544", polo_rj, turma_rj, "JOVEM"),
+            ("Thiago Martins", "thiago.martins@aluno.org", "(21) 96655-4433", polo_rj, turma_rj, "ADULTO"),
             # BH
-            ("Rafael Costa", "rafael.costa@aluno.org", "(31) 99988-7766", polo_bh, turma_bh),
-            ("Amanda Silva", "amanda.silva@aluno.org", "(31) 98877-6655", polo_bh, turma_bh),
-            ("Daniel Alves", "daniel.alves@aluno.org", "(31) 97766-5544", polo_bh, turma_bh),
+            ("Rafael Costa", "rafael.costa@aluno.org", "(31) 99988-7766", polo_bh, turma_bh, "ADULTO"),
+            ("Amanda Silva", "amanda.silva@aluno.org", "(31) 98877-6655", polo_bh, turma_bh, "JOVEM"),
+            ("Daniel Alves", "daniel.alves@aluno.org", "(31) 97766-5544", polo_bh, turma_bh, "ADULTO"),
         ]
 
         alunos_objetos = []
-        for nome, email, fone, polo_obj, turma_obj in lista_alunos_dados:
+        for nome, email, fone, polo_obj, turma_obj, tipo in lista_alunos_dados:
             usr = Usuario(nome=nome, email=email, senha_hash="hash123", perfil="ALUNO")
             db.add(usr)
             db.commit()
 
-            aln = Aluno(usuario_id=usr.id, nome=nome, email=email, telefone=fone, polo_id=polo_obj.id)
+            aln = Aluno(usuario_id=usr.id, nome=nome, email=email, telefone=fone, polo_id=polo_obj.id, tipo_aluno=tipo)
             db.add(aln)
             db.commit()
 
@@ -165,7 +172,7 @@ def seed_database():
 
             alunos_objetos.append((aln, turma_obj))
 
-        # 6. Criar Histórico de Sessoes de Aula e Presenças
+        # 7. Criar Histórico de Sessoes de Aula e Presenças
         datas_aulas = ["2026-08-04", "2026-08-11", "2026-08-18", "2026-08-25", "2026-09-01"]
         for turma_obj in [turma_sp, turma_rj, turma_bh]:
             alunos_da_turma = [a for a, t in alunos_objetos if t.id == turma_obj.id]
@@ -188,7 +195,7 @@ def seed_database():
                     db.add(pres)
                 db.commit()
 
-        # 7. Criar Notas de Módulos (Lançamento de Avaliações)
+        # 8. Criar Notas de Módulos (Lançamento de Avaliações)
         modulos = [mod1, mod2, mod3]
         for aln, turma_obj in alunos_objetos:
             for mod in modulos:

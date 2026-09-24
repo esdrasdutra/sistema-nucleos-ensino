@@ -7,11 +7,11 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from database import Base, engine, get_db
-from models import Usuario, Polo, Curso, Modulo, Turma, Aluno, Matricula, SessaoAula, Presenca, NotaModulo
+from models import Usuario, Polo, Curso, Materia, Modulo, Turma, Aluno, Matricula, SessaoAula, Presenca, NotaModulo
 from schemas import (
-    UsuarioOut, PoloOut, PoloCreate, CursoOut, ModuloOut, TurmaOut, TurmaCreate,
+    UsuarioOut, PoloOut, PoloCreate, CursoOut, MateriaOut, MateriaCreate, ModuloOut, TurmaOut, TurmaCreate,
     AlunoOut, AlunoCreate, RegistrarChamadaRequest, LancarNotaRequest, NotaOut,
-    BoletimAlunoOut, NotaModuloAlunoOut, DashboardOverviewOut
+    BoletimAlunoOut, NotaModuloAlunoOut, HistoricoAlunoOut, HistoricoAlunoItemOut, DashboardOverviewOut
 )
 from seed import seed_database
 
@@ -19,11 +19,13 @@ from seed import seed_database
 Base.metadata.create_all(bind=engine)
 
 # Auto-seed se o banco estiver vazio
-with engine.connect() as conn:
-    from database import SessionLocal
-    db = SessionLocal()
+from database import SessionLocal
+
+db = SessionLocal()
+try:
     if db.query(Usuario).count() == 0:
         seed_database()
+finally:
     db.close()
 
 app = FastAPI(
@@ -71,6 +73,15 @@ def ensure_turma_scope(turma_id: int, user_role: str, user_polo_id: Optional[int
     if user_role == "GESTOR_NUCLEO" and turma.polo_id != user_polo_id:
         raise HTTPException(status_code=403, detail="A turma não pertence ao núcleo do gestor")
     return turma
+
+
+def ensure_user_can_manage_polo(user_role: str, user_polo_id: Optional[int], polo_id: Optional[int], db: Session = None):
+    if user_role != "GESTOR_NUCLEO":
+        return
+    if user_polo_id is None:
+        raise HTTPException(status_code=403, detail="Gestor sem núcleo associado")
+    if polo_id is None or polo_id != user_polo_id:
+        raise HTTPException(status_code=403, detail="Você não pode manipular turmas de um núcleo que não pertence ao seu perfil")
 
 # Factory de Permissão RBAC por Perfis Permitidos
 def require_roles(allowed_roles: List[str]):
@@ -122,6 +133,11 @@ def listar_polos(polo_id: Optional[int] = None, user_role: str = Depends(get_cur
 
 @app.post("/api/v1/polos", response_model=PoloOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_roles(["ADMIN"]))])
 def criar_polo(dados: PoloCreate, db: Session = Depends(get_db)):
+    if not dados.aceitou_termos:
+        raise HTTPException(status_code=400, detail="É necessário aceitar os termos para criar um núcleo.")
+    if not dados.responsavel_id:
+        raise HTTPException(status_code=400, detail="Informe o gestor responsável pelo núcleo.")
+
     polo = Polo(
         nome=dados.nome, codigo=dados.codigo, cidade=dados.cidade,
         estado=dados.estado, responsavel_id=dados.responsavel_id,
@@ -191,7 +207,8 @@ def listar_turmas(polo_id: Optional[int] = None, user_role: str = Depends(get_cu
     return resultado
 
 @app.post("/api/v1/turmas", response_model=TurmaOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_roles(["ADMIN", "GESTOR_NUCLEO"]))])
-def criar_turma(dados: TurmaCreate, db: Session = Depends(get_db)):
+def criar_turma(dados: TurmaCreate, user_role: str = Depends(get_current_user_role), user_polo_id: Optional[int] = Depends(get_current_user_polo_id), db: Session = Depends(get_db)):
+    ensure_user_can_manage_polo(user_role, user_polo_id, dados.polo_id)
     turma = Turma(
         polo_id=dados.polo_id, curso_id=dados.curso_id, nome_turma=dados.nome_turma,
         professor=dados.professor, dia_semana=dados.dia_semana, horario=dados.horario
@@ -208,10 +225,13 @@ def criar_turma(dados: TurmaCreate, db: Session = Depends(get_db)):
     )
 
 @app.put("/api/v1/turmas/{turma_id}", response_model=TurmaOut, dependencies=[Depends(require_roles(["ADMIN", "GESTOR_NUCLEO"]))])
-def atualizar_turma(turma_id: int, dados: TurmaCreate, db: Session = Depends(get_db)):
+def atualizar_turma(turma_id: int, dados: TurmaCreate, user_role: str = Depends(get_current_user_role), user_polo_id: Optional[int] = Depends(get_current_user_polo_id), db: Session = Depends(get_db)):
     turma = db.query(Turma).filter(Turma.id == turma_id).first()
     if not turma:
         raise HTTPException(status_code=404, detail="Turma não encontrada")
+
+    target_polo_id = dados.polo_id if dados.polo_id is not None else turma.polo_id
+    ensure_user_can_manage_polo(user_role, user_polo_id, target_polo_id)
 
     turma.polo_id = dados.polo_id
     turma.curso_id = dados.curso_id
@@ -232,11 +252,15 @@ def atualizar_turma(turma_id: int, dados: TurmaCreate, db: Session = Depends(get
         curso_nome=turma.curso.nome if turma.curso else None, total_alunos=tot_aln
     )
 
-@app.delete("/api/v1/turmas/{turma_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(require_roles(["ADMIN"]))])
-def deletar_turma(turma_id: int, db: Session = Depends(get_db)):
+@app.delete("/api/v1/turmas/{turma_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(require_roles(["ADMIN", "GESTOR_NUCLEO"]))])
+def deletar_turma(turma_id: int, user_role: str = Depends(get_current_user_role), user_polo_id: Optional[int] = Depends(get_current_user_polo_id), db: Session = Depends(get_db)):
     turma = db.query(Turma).filter(Turma.id == turma_id).first()
     if not turma:
         raise HTTPException(status_code=404, detail="Turma não encontrada")
+
+    if user_role == "GESTOR_NUCLEO":
+        if user_polo_id is None or turma.polo_id != user_polo_id:
+            raise HTTPException(status_code=403, detail="Você não pode excluir turmas de um núcleo que não pertence ao seu perfil")
 
     db.delete(turma)
     db.commit()
@@ -244,10 +268,15 @@ def deletar_turma(turma_id: int, db: Session = Depends(get_db)):
 
 # --- ALUNOS (CRUD COMPLETO + RBAC) ---
 @app.get("/api/v1/alunos", response_model=List[AlunoOut])
-def listar_alunos(polo_id: Optional[int] = None, turma_id: Optional[int] = None, user_role: str = Depends(get_current_user_role), user_polo_id: Optional[int] = Depends(get_current_user_polo_id), db: Session = Depends(get_db)):
+def listar_alunos(polo_id: Optional[int] = None, turma_id: Optional[int] = None, tipo_aluno: Optional[str] = None, user_role: str = Depends(get_current_user_role), user_polo_id: Optional[int] = Depends(get_current_user_polo_id), db: Session = Depends(get_db)):
     query = apply_polo_scope(db.query(Aluno), Aluno, user_role, polo_id, user_polo_id)
     if turma_id:
         query = query.join(Matricula).filter(Matricula.turma_id == turma_id)
+    if tipo_aluno:
+        tipo = tipo_aluno.upper()
+        if tipo not in {"JOVEM", "ADULTO"}:
+            raise HTTPException(status_code=400, detail="Tipo de aluno inválido. Use JOVEM ou ADULTO.")
+        query = query.filter(Aluno.tipo_aluno == tipo)
 
     alunos = query.all()
     resultado = []
@@ -257,19 +286,27 @@ def listar_alunos(polo_id: Optional[int] = None, turma_id: Optional[int] = None,
         resultado.append(AlunoOut(
             id=a.id, nome=a.nome, email=a.email, telefone=a.telefone,
             polo_id=a.polo_id, polo_nome=a.polo.nome if a.polo else None,
-            turma_nome=t_nome, data_matricula=a.data_matricula
+            turma_nome=t_nome, tipo_aluno=a.tipo_aluno or "ADULTO", data_matricula=a.data_matricula
         ))
     return resultado
 
 @app.post("/api/v1/alunos", response_model=AlunoOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_roles(["ADMIN", "GESTOR_NUCLEO"]))])
-def criar_aluno(dados: AlunoCreate, db: Session = Depends(get_db)):
+def criar_aluno(dados: AlunoCreate, user_role: str = Depends(get_current_user_role), user_polo_id: Optional[int] = Depends(get_current_user_polo_id), db: Session = Depends(get_db)):
+    if user_role == "GESTOR_NUCLEO":
+        if user_polo_id is None or dados.polo_id != user_polo_id:
+            raise HTTPException(status_code=403, detail="Você não pode cadastrar alunos de outro núcleo.")
+
+    tipo = (dados.tipo_aluno or "ADULTO").upper()
+    if tipo not in {"JOVEM", "ADULTO"}:
+        raise HTTPException(status_code=400, detail="Tipo de aluno inválido. Use JOVEM ou ADULTO.")
+
     usr = Usuario(nome=dados.nome, email=dados.email, perfil="ALUNO")
     db.add(usr)
     db.commit()
 
     aluno = Aluno(
         usuario_id=usr.id, nome=dados.nome, email=dados.email,
-        telefone=dados.telefone, polo_id=dados.polo_id
+        telefone=dados.telefone, polo_id=dados.polo_id, tipo_aluno=tipo
     )
     db.add(aluno)
     db.commit()
@@ -287,19 +324,28 @@ def criar_aluno(dados: AlunoCreate, db: Session = Depends(get_db)):
     return AlunoOut(
         id=aluno.id, nome=aluno.nome, email=aluno.email, telefone=aluno.telefone,
         polo_id=aluno.polo_id, polo_nome=aluno.polo.nome if aluno.polo else None,
-        turma_nome=t_nome, data_matricula=aluno.data_matricula
+        turma_nome=t_nome, tipo_aluno=aluno.tipo_aluno, data_matricula=aluno.data_matricula
     )
 
 @app.put("/api/v1/alunos/{aluno_id}", response_model=AlunoOut, dependencies=[Depends(require_roles(["ADMIN", "GESTOR_NUCLEO"]))])
-def atualizar_aluno(aluno_id: int, dados: AlunoCreate, db: Session = Depends(get_db)):
+def atualizar_aluno(aluno_id: int, dados: AlunoCreate, user_role: str = Depends(get_current_user_role), user_polo_id: Optional[int] = Depends(get_current_user_polo_id), db: Session = Depends(get_db)):
     aluno = db.query(Aluno).filter(Aluno.id == aluno_id).first()
     if not aluno:
         raise HTTPException(status_code=404, detail="Aluno não encontrado")
+
+    if user_role == "GESTOR_NUCLEO":
+        if user_polo_id is None or aluno.polo_id != user_polo_id:
+            raise HTTPException(status_code=403, detail="Você não pode alterar alunos de outro núcleo.")
+
+    tipo = (dados.tipo_aluno or "ADULTO").upper()
+    if tipo not in {"JOVEM", "ADULTO"}:
+        raise HTTPException(status_code=400, detail="Tipo de aluno inválido. Use JOVEM ou ADULTO.")
 
     aluno.nome = dados.nome
     aluno.email = dados.email
     aluno.telefone = dados.telefone
     aluno.polo_id = dados.polo_id
+    aluno.tipo_aluno = tipo
 
     if dados.turma_id:
         matr = db.query(Matricula).filter(Matricula.aluno_id == aluno.id).first()
@@ -319,18 +365,64 @@ def atualizar_aluno(aluno_id: int, dados: AlunoCreate, db: Session = Depends(get
     return AlunoOut(
         id=aluno.id, nome=aluno.nome, email=aluno.email, telefone=aluno.telefone,
         polo_id=aluno.polo_id, polo_nome=aluno.polo.nome if aluno.polo else None,
-        turma_nome=t_nome, data_matricula=aluno.data_matricula
+        turma_nome=t_nome, tipo_aluno=aluno.tipo_aluno, data_matricula=aluno.data_matricula
     )
 
-@app.delete("/api/v1/alunos/{aluno_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(require_roles(["ADMIN"]))])
-def deletar_aluno(aluno_id: int, db: Session = Depends(get_db)):
+@app.delete("/api/v1/alunos/{aluno_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(require_roles(["ADMIN", "GESTOR_NUCLEO"]))])
+def deletar_aluno(aluno_id: int, user_role: str = Depends(get_current_user_role), user_polo_id: Optional[int] = Depends(get_current_user_polo_id), db: Session = Depends(get_db)):
     aluno = db.query(Aluno).filter(Aluno.id == aluno_id).first()
     if not aluno:
         raise HTTPException(status_code=404, detail="Aluno não encontrado")
 
+    if user_role == "GESTOR_NUCLEO":
+        if user_polo_id is None or aluno.polo_id != user_polo_id:
+            raise HTTPException(status_code=403, detail="Você não pode remover alunos de outro núcleo.")
+
     db.delete(aluno)
     db.commit()
     return {"message": f"Aluno '{aluno.nome}' removido com sucesso!"}
+
+# --- MATERIAS ---
+@app.get("/api/v1/materias", response_model=List[MateriaOut], dependencies=[Depends(require_roles(["ADMIN"]))])
+def listar_materias(db: Session = Depends(get_db)):
+    return db.query(Materia).order_by(Materia.nome.asc()).all()
+
+@app.post("/api/v1/materias", response_model=MateriaOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_roles(["ADMIN"]))])
+def criar_materia(dados: MateriaCreate, db: Session = Depends(get_db)):
+    materia = db.query(Materia).filter(Materia.codigo == dados.codigo).first()
+    if materia:
+        raise HTTPException(status_code=400, detail="Já existe uma matéria com este código")
+
+    materia = Materia(nome=dados.nome, codigo=dados.codigo, descricao=dados.descricao, status=dados.status or "ATIVA")
+    db.add(materia)
+    db.commit()
+    db.refresh(materia)
+    return materia
+
+@app.put("/api/v1/materias/{materia_id}", response_model=MateriaOut, dependencies=[Depends(require_roles(["ADMIN"]))])
+def atualizar_materia(materia_id: int, dados: MateriaCreate, db: Session = Depends(get_db)):
+    materia = db.query(Materia).filter(Materia.id == materia_id).first()
+    if not materia:
+        raise HTTPException(status_code=404, detail="Matéria não encontrada")
+
+    materia.nome = dados.nome
+    materia.codigo = dados.codigo
+    materia.descricao = dados.descricao
+    materia.status = dados.status or materia.status
+
+    db.commit()
+    db.refresh(materia)
+    return materia
+
+@app.delete("/api/v1/materias/{materia_id}", status_code=status.HTTP_200_OK, dependencies=[Depends(require_roles(["ADMIN"]))])
+def deletar_materia(materia_id: int, db: Session = Depends(get_db)):
+    materia = db.query(Materia).filter(Materia.id == materia_id).first()
+    if not materia:
+        raise HTTPException(status_code=404, detail="Matéria não encontrada")
+
+    db.delete(materia)
+    db.commit()
+    return {"message": f"Matéria '{materia.nome}' excluída com sucesso!"}
 
 # --- CURSOS & MÓDULOS ---
 @app.get("/api/v1/cursos", response_model=List[CursoOut])
@@ -464,10 +556,14 @@ def registrar_notas(dados: LancarNotaRequest, user_role: str = Depends(get_curre
 
 # --- PORTAL DO ALUNO ---
 @app.get("/api/v1/portal-aluno/{aluno_id}", response_model=BoletimAlunoOut)
-def obter_boletim_aluno(aluno_id: int, db: Session = Depends(get_db)):
-    aluno = db.query(Aluno).get(aluno_id)
+def obter_boletim_aluno(aluno_id: int, user_role: str = Depends(get_current_user_role), user_polo_id: Optional[int] = Depends(get_current_user_polo_id), db: Session = Depends(get_db)):
+    aluno = db.get(Aluno, aluno_id)
     if not aluno:
         raise HTTPException(status_code=404, detail="Aluno não encontrado")
+
+    if user_role == "GESTOR_NUCLEO":
+        if user_polo_id is None or aluno.polo_id != user_polo_id:
+            raise HTTPException(status_code=403, detail="Você não pode visualizar o boletim de alunos fora do seu núcleo.")
 
     matricula = db.query(Matricula).filter(Matricula.aluno_id == aluno_id, Matricula.status_matricula == "ATIVO").first()
     if not matricula:
@@ -536,6 +632,94 @@ def obter_boletim_aluno(aluno_id: int, db: Session = Depends(get_db)):
         media_geral=media_geral, frequencia_percentual=freq_perc,
         total_presencas=total_presencas, total_aulas=total_aulas,
         status_geral=status_geral, notas_modulos=notas_modulos_list
+    )
+
+@app.get("/api/v1/historico-aluno/{aluno_id}", response_model=HistoricoAlunoOut)
+def obter_historico_aluno(aluno_id: int, user_role: str = Depends(get_current_user_role), user_polo_id: Optional[int] = Depends(get_current_user_polo_id), db: Session = Depends(get_db)):
+    aluno = db.get(Aluno, aluno_id)
+    if not aluno:
+        raise HTTPException(status_code=404, detail="Aluno não encontrado")
+
+    if user_role == "GESTOR_NUCLEO":
+        if user_polo_id is None or aluno.polo_id != user_polo_id:
+            raise HTTPException(status_code=403, detail="Você não pode visualizar o histórico de alunos fora do seu núcleo.")
+
+    matricula = db.query(Matricula).filter(Matricula.aluno_id == aluno_id, Matricula.status_matricula == "ATIVO").first()
+    if not matricula:
+        raise HTTPException(status_code=404, detail="Aluno não está enturmado em nenhuma turma ativa")
+
+    turma = matricula.turma
+    curso = turma.curso
+    polo = aluno.polo
+
+    modulos = db.query(Modulo).filter(Modulo.curso_id == curso.id).order_by(Modulo.ordem).all()
+    sessoes_turma = db.query(SessaoAula).filter(SessaoAula.turma_id == turma.id).all()
+    total_aulas = len(sessoes_turma)
+    sessao_ids = [s.id for s in sessoes_turma]
+
+    total_presencas = 0
+    if total_aulas > 0:
+        total_presencas = db.query(Presenca).filter(
+            Presenca.sessao_id.in_(sessao_ids),
+            Presenca.aluno_id == aluno_id,
+            Presenca.presente == True
+        ).count()
+
+    frequencia_percentual = round((total_presencas / total_aulas) * 100, 1) if total_aulas > 0 else 100.0
+
+    historico = []
+    soma_notas = 0.0
+    qtd_notas = 0
+
+    for m in modulos:
+        nota_obj = db.query(NotaModulo).filter(
+            NotaModulo.aluno_id == aluno_id,
+            NotaModulo.turma_id == turma.id,
+            NotaModulo.modulo_id == m.id
+        ).first()
+
+        nota_val = nota_obj.nota if nota_obj else 0.0
+        if nota_obj:
+            soma_notas += nota_val
+            qtd_notas += 1
+
+        if nota_val >= 7.0:
+            sit = "APROVADO"
+        elif nota_val >= 5.0:
+            sit = "RECUPERACAO"
+        else:
+            sit = "REPROVADO" if nota_obj else "PENDENTE"
+
+        presenca_total = total_presencas if total_aulas > 0 else 0
+        presenca_percentual = frequencia_percentual
+        historico.append(HistoricoAlunoItemOut(
+            modulo_id=m.id,
+            modulo_nome=m.nome_modulo,
+            nota=nota_val,
+            situacao=sit,
+            presenca_total=presenca_total,
+            presenca_percentual=presenca_percentual,
+        ))
+
+    media_geral = round(soma_notas / qtd_notas, 2) if qtd_notas > 0 else 0.0
+
+    if media_geral >= 7.0 and frequencia_percentual >= 75.0:
+        status_geral = "APROVADO (BOM DESEMPENHO)"
+    elif media_geral >= 5.0:
+        status_geral = "EM RECUPERAÇÃO"
+    else:
+        status_geral = "EM ACOMPANHAMENTO"
+
+    return HistoricoAlunoOut(
+        aluno_id=aluno.id,
+        aluno_nome=aluno.nome,
+        polo_nome=polo.nome if polo else "Polo Geral",
+        turma_nome=turma.nome_turma,
+        curso_nome=curso.nome,
+        media_geral=media_geral,
+        frequencia_percentual=frequencia_percentual,
+        status_geral=status_geral,
+        historico=historico,
     )
 
 # --- ANALYTICS / DASHBOARD ---

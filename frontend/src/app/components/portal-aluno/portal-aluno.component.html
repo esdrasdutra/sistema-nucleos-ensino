@@ -6,14 +6,24 @@
           <h1 class="font-display main-headline">PORTAL DO ALUNO & BOLETIM</h1>
           <p class="aluno-subinfo" *ngIf="boletim">
             <strong>{{ boletim.aluno_nome }}</strong> — {{ boletim.curso_nome }} | {{ boletim.polo_nome }}
+            <span class="badge badge-olive" *ngIf="getAlunoTipoSelecionado()">
+              {{ getAlunoTipoSelecionado() }}
+            </span>
           </p>
         </div>
 
         <div class="student-selector">
+          <label class="form-label">Filtrar por categoria:</label>
+          <select class="form-select mb-2" [(ngModel)]="selectedTipoAluno" (change)="onTipoAlunoChange()">
+            <option value="TODOS">Todos</option>
+            <option value="JOVEM">Jovem</option>
+            <option value="ADULTO">Adulto</option>
+          </select>
+
           <label class="form-label">Simular Aluno:</label>
           <select class="form-select" [(ngModel)]="selectedAlunoId" (change)="carregarBoletim()">
             <option *ngFor="let a of todosAlunos" [value]="a.id">
-              {{ a.nome }} ({{ a.polo_nome }})
+              {{ a.nome }} ({{ a.polo_nome }}) — {{ a.tipo_aluno || 'ADULTO' }}
             </option>
           </select>
         </div>
@@ -79,6 +89,38 @@
                   </span>
                 </td>
                 <td>Nota mínima >= 7.0 + Frequência mínima 75%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card mt-4" *ngIf="historico">
+        <div class="card-header-bordered">
+          <h3><i class="fa-solid fa-clock-rotate-left"></i> Histórico Consolidado do Aluno</h3>
+          <span class="badge badge-olive">Presença + Notas</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table-custom">
+            <thead>
+              <tr>
+                <th>Módulo</th>
+                <th>Nota</th>
+                <th>Situação</th>
+                <th>Presença</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of historico.historico">
+                <td><strong>{{ item.modulo_nome }}</strong></td>
+                <td>{{ item.nota }}</td>
+                <td>
+                  <span class="badge" [class.badge-aprovado]="item.situacao === 'APROVADO'" [class.badge-recuperacao]="item.situacao === 'RECUPERACAO'" [class.badge-reprovado]="item.situacao === 'REPROVADO'">
+                    {{ item.situacao }}
+                  </span>
+                </td>
+                <td>{{ item.presenca_total }} aulas · {{ item.presenca_percentual }}%</td>
               </tr>
             </tbody>
           </table>

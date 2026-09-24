@@ -82,7 +82,7 @@
             <i class="fa-solid fa-chart-pie"></i> Dashboard
           </a>
           <a href="#polos" class="nav-link" onclick="switchView('polos')">
-            <i class="fa-solid fa-building-columns"></i> Polos & Turmas
+            <i class="fa-solid fa-building-columns"></i> Núcleos & Turmas
           </a>
           <a href="#chamada" class="nav-link" onclick="switchView('chamada')">
             <i class="fa-solid fa-clipboard-user"></i> Chamada Digital
@@ -156,8 +156,8 @@
               <div style="display:flex; align-items:flex-start; gap:1rem; background:var(--bg-surface); border:1px solid var(--border-subtle); border-left:4px solid var(--color-green-01); padding:1rem 1.25rem; border-radius:6px;">
                 <i class="fa-solid fa-sitemap" style="font-size:1.4rem; color:var(--color-green-01); margin-top:0.1rem;"></i>
                 <div>
-                  <strong style="display:block; color:var(--color-green-02); font-size:0.95rem;">Gestão Descentralizada de Polos</strong>
-                  <span style="font-size:0.825rem; color:var(--text-muted);">Supervisão de núcleos regionais e congregacionais com gestores dedicados por polo.</span>
+                  <strong style="display:block; color:var(--color-green-02); font-size:0.95rem;">Gestão Descentralizada de Núcleos</strong>
+                  <span style="font-size:0.825rem; color:var(--text-muted);">Supervisão de núcleos regionais e congregacionais com gestores dedicados por núcleo.</span>
                 </div>
               </div>
 
@@ -242,7 +242,7 @@
         <!-- KPIs em Morganite -->
         <div class="kpi-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem;">
           <div class="kpi-card">
-            <span class="kpi-title">Polos de Ensino</span>
+            <span class="kpi-title">Núcleos de Ensino</span>
             <div class="kpi-value" id="kpi-polos">4</div>
             <span class="kpi-subtext"><i class="fa-solid fa-location-dot"></i> Núcleos Ativos</span>
           </div>
@@ -272,7 +272,7 @@
         <div class="analytics-grid" style="display:grid; grid-template-columns: 3fr 2fr; gap: 1.75rem;">
           <div class="card">
             <div class="card-header-bordered">
-              <h3><i class="fa-solid fa-ranking-star"></i> Assiduidade e Presença por Polo EAD</h3>
+              <h3><i class="fa-solid fa-ranking-star"></i> Assiduidade e Presença por Núcleo</h3>
               <span class="badge badge-olive">Atualizado em Tempo Real</span>
             </div>
             <div class="table-responsive">
@@ -307,10 +307,10 @@
             <span style="font-size:0.75rem; font-weight:800; color:var(--color-olive-soft); letter-spacing:1.5px; text-transform:uppercase;">
               <i class="fa-solid fa-building-columns"></i> REDE DESCENTRALIZADA
             </span>
-            <h1 class="font-display" style="font-size: 2.8rem; margin-top: 0.2rem;">GESTÃO DE POLOS E RESPONSÁVEIS</h1>
+            <h1 class="font-display" style="font-size: 2.8rem; margin-top: 0.2rem;">GESTÃO DE NÚCLEOS E RESPONSÁVEIS</h1>
           </div>
           <button class="btn btn-primary" id="btn-novo-polo" onclick="openPoloModal()">
-            <i class="fa-solid fa-plus"></i> Novo Polo de Ensino
+            <i class="fa-solid fa-plus"></i> Novo Núcleo
           </button>
         </div>
 
@@ -345,13 +345,13 @@
       <div id="polo-modal-backdrop" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(12,40,0,0.6); backdrop-filter:blur(4px); align-items:center; justify-content:center; z-index:1000;">
         <div class="card" style="width:100%; max-width:500px; border:2px solid var(--color-olive-soft);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-            <h2 class="font-display" id="modal-polo-title">Cadastrar Novo Polo</h2>
+            <h2 class="font-display" id="modal-polo-title">Cadastrar Novo Núcleo</h2>
             <button onclick="closePoloModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--text-muted);">&times;</button>
           </div>
           <form onsubmit="handlePoloSubmit(event)">
             <input type="hidden" id="modal-polo-id">
             <div class="form-group">
-              <label class="form-label">Nome do Polo / Núcleo</label>
+              <label class="form-label">Nome do Núcleo</label>
               <input type="text" class="form-control" id="modal-polo-nome" required>
             </div>
             <div class="form-group">
@@ -370,7 +370,7 @@
             </div>
             <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
               <button type="button" class="btn btn-secondary" onclick="closePoloModal()">Cancelar</button>
-              <button type="submit" class="btn btn-primary" id="btn-save-polo">Salvar Polo</button>
+              <button type="submit" class="btn btn-primary" id="btn-save-polo">Salvar Núcleo</button>
             </div>
           </form>
         </div>

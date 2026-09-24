@@ -1,0 +1,206 @@
+.materias-page {
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.sub-headline {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-olive-soft);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.card {
+  background: rgba(255,255,255,0.92);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 30px rgba(9, 34, 15, 0.06);
+  padding: 1.5rem;
+}
+
+.card-header-bordered {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table-custom {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-custom th,
+.table-custom td {
+  padding: 0.9rem 0.8rem;
+  border-bottom: 1px solid var(--border-subtle);
+  text-align: left;
+  vertical-align: top;
+}
+
+.table-custom th {
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.badge-olive {
+  background: rgba(94, 122, 54, 0.12);
+  color: var(--color-green-02);
+}
+
+.badge-sucesso {
+  background: rgba(37, 140, 66, 0.12);
+  color: var(--color-green-02);
+}
+
+.badge-secondary {
+  background: rgba(120, 120, 120, 0.12);
+  color: var(--text-muted);
+}
+
+.card-crud-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.card-crud-actions.compact {
+  justify-content: flex-start;
+}
+
+.btn {
+  border: none;
+  border-radius: 12px;
+  padding: 0.7rem 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(120deg, var(--color-green-02), var(--color-green-01));
+  color: white;
+}
+
+.btn-secondary {
+  background: rgba(17, 43, 28, 0.06);
+  color: var(--text-dark);
+}
+
+.btn-delete {
+  color: #b42318;
+}
+
+.btn-sm {
+  padding: 0.55rem 0.8rem;
+  font-size: 0.78rem;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(12, 40, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-card {
+  width: min(100%, 620px);
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 20px 45px rgba(10, 28, 15, 0.2);
+  padding: 1.5rem;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.close-btn {
+  border: none;
+  background: transparent;
+  font-size: 2rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.form-control,
+.form-select {
+  width: 100%;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  font: inherit;
+  background: #fff;
+  color: var(--text-dark);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .page-header,
+  .card-header-bordered {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

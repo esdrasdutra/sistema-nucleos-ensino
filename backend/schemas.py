@@ -29,13 +29,30 @@ class PoloBase(BaseModel):
     status: Optional[str] = "ATIVO"
 
 class PoloCreate(PoloBase):
-    pass
+    aceitou_termos: bool = False
 
 class PoloOut(PoloBase):
     id: int
     responsavel_nome: Optional[str] = None
     total_alunos: Optional[int] = 0
     total_turmas: Optional[int] = 0
+
+    class Config:
+        from_attributes = True
+
+# Materia Schemas
+class MateriaBase(BaseModel):
+    nome: str
+    codigo: str
+    descricao: Optional[str] = None
+    status: Optional[str] = "ATIVA"
+
+class MateriaCreate(MateriaBase):
+    pass
+
+class MateriaOut(MateriaBase):
+    id: int
+    data_criacao: datetime
 
     class Config:
         from_attributes = True
@@ -94,6 +111,7 @@ class AlunoBase(BaseModel):
     email: str
     telefone: Optional[str] = None
     polo_id: int
+    tipo_aluno: Optional[str] = "ADULTO"
 
 class AlunoCreate(AlunoBase):
     turma_id: Optional[int] = None
@@ -171,6 +189,25 @@ class BoletimAlunoOut(BaseModel):
     total_aulas: int
     status_geral: str
     notas_modulos: List[NotaModuloAlunoOut] = []
+
+class HistoricoAlunoItemOut(BaseModel):
+    modulo_id: int
+    modulo_nome: str
+    nota: float
+    situacao: str
+    presenca_total: int
+    presenca_percentual: float
+
+class HistoricoAlunoOut(BaseModel):
+    aluno_id: int
+    aluno_nome: str
+    polo_nome: str
+    turma_nome: str
+    curso_nome: str
+    media_geral: float
+    frequencia_percentual: float
+    status_geral: str
+    historico: List[HistoricoAlunoItemOut] = []
 
 # Analytics / Overview
 class DashboardOverviewOut(BaseModel):

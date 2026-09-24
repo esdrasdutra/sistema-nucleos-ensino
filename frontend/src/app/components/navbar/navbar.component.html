@@ -17,7 +17,10 @@
             <i class="fa-solid fa-chart-pie"></i> Dashboard
           </a>
           <a routerLink="/polos" routerLinkActive="active" *ngIf="isAdmin() || isGestor()" class="nav-link">
-            <i class="fa-solid fa-building-columns"></i> {{ isGestor() ? 'Meu Núcleo' : 'Polos & Turmas' }}
+            <i class="fa-solid fa-building-columns"></i> {{ isGestor() ? 'Meu Núcleo' : 'Núcleos & Turmas' }}
+          </a>
+          <a routerLink="/materias" routerLinkActive="active" *ngIf="isAdmin()" class="nav-link">
+            <i class="fa-solid fa-book-open-reader"></i> Matérias
           </a>
           <a routerLink="/chamada" routerLinkActive="active" *ngIf="isAdmin() || isGestor()" class="nav-link">
             <i class="fa-solid fa-clipboard-user"></i> Chamada Digital

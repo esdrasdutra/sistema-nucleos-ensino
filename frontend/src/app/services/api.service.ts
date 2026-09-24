@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
-  Polo, Curso, Turma, Aluno, SessaoChamada, NotaItem, BoletimAluno, DashboardOverview
+  Polo, Curso, Materia, Turma, Aluno, Usuario, SessaoChamada, NotaItem, BoletimAluno, HistoricoAluno, DashboardOverview
 } from '../models/interfaces';
 import { AuthService } from './auth.service';
 
@@ -54,6 +54,23 @@ export class ApiService {
     return this.http.get<Curso[]>(`${this.apiUrl}/cursos`);
   }
 
+  // Matérias CRUD
+  getMaterias(): Observable<Materia[]> {
+    return this.http.get<Materia[]>(`${this.apiUrl}/materias`, { headers: this.getHeaders() });
+  }
+
+  createMateria(materia: Partial<Materia>): Observable<Materia> {
+    return this.http.post<Materia>(`${this.apiUrl}/materias`, materia, { headers: this.getHeaders() });
+  }
+
+  updateMateria(id: number, materia: Partial<Materia>): Observable<Materia> {
+    return this.http.put<Materia>(`${this.apiUrl}/materias/${id}`, materia, { headers: this.getHeaders() });
+  }
+
+  deleteMateria(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/materias/${id}`, { headers: this.getHeaders() });
+  }
+
   // Turmas CRUD
   getTurmas(poloId?: number): Observable<Turma[]> {
     let params = new HttpParams();
@@ -73,15 +90,23 @@ export class ApiService {
     return this.http.delete(`${this.apiUrl}/turmas/${id}`, { headers: this.getHeaders() });
   }
 
+  // Usuários / Gestores
+  getUsuarios(perfil?: string): Observable<Usuario[]> {
+    let params = new HttpParams();
+    if (perfil) params = params.set('perfil', perfil);
+    return this.http.get<Usuario[]>(`${this.apiUrl}/usuarios`, { params, headers: this.getHeaders() });
+  }
+
   // Alunos CRUD
-  getAlunos(poloId?: number, turmaId?: number): Observable<Aluno[]> {
+  getAlunos(poloId?: number, turmaId?: number, tipoAluno?: 'JOVEM' | 'ADULTO'): Observable<Aluno[]> {
     let params = new HttpParams();
     if (poloId) params = params.set('polo_id', poloId.toString());
     if (turmaId) params = params.set('turma_id', turmaId.toString());
+    if (tipoAluno) params = params.set('tipo_aluno', tipoAluno);
     return this.http.get<Aluno[]>(`${this.apiUrl}/alunos`, { params, headers: this.getHeaders() });
   }
 
-  createAluno(aluno: { nome: string; email: string; telefone?: string; polo_id: number; turma_id?: number }): Observable<Aluno> {
+  createAluno(aluno: { nome: string; email: string; telefone?: string; polo_id: number; turma_id?: number; tipo_aluno?: 'JOVEM' | 'ADULTO' }): Observable<Aluno> {
     return this.http.post<Aluno>(`${this.apiUrl}/alunos`, aluno, { headers: this.getHeaders() });
   }
 
@@ -128,6 +153,10 @@ export class ApiService {
   // Portal Aluno
   getBoletimAluno(alunoId: number): Observable<BoletimAluno> {
     return this.http.get<BoletimAluno>(`${this.apiUrl}/portal-aluno/${alunoId}`);
+  }
+
+  getHistoricoAluno(alunoId: number): Observable<HistoricoAluno> {
+    return this.http.get<HistoricoAluno>(`${this.apiUrl}/historico-aluno/${alunoId}`, { headers: this.getHeaders() });
   }
 
   // Dashboard Overview

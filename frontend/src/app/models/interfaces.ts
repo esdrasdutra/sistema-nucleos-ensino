@@ -18,6 +18,7 @@ export interface Polo {
   responsavel_id?: number;
   responsavel_nome?: string;
   status: string;
+  aceitou_termos?: boolean;
   total_alunos?: number;
   total_turmas?: number;
 }
@@ -36,6 +37,15 @@ export interface Curso {
   descricao?: string;
   carga_horaria: number;
   modulos?: Modulo[];
+}
+
+export interface Materia {
+  id: number;
+  nome: string;
+  codigo: string;
+  descricao?: string;
+  status: string;
+  data_criacao: string;
 }
 
 export interface Turma {
@@ -60,6 +70,7 @@ export interface Aluno {
   polo_id: number;
   polo_nome?: string;
   turma_nome?: string;
+  tipo_aluno?: 'JOVEM' | 'ADULTO';
   data_matricula: string;
 }
 
@@ -108,6 +119,27 @@ export interface BoletimAluno {
   total_aulas: number;
   status_geral: string;
   notas_modulos: NotaModuloAluno[];
+}
+
+export interface HistoricoAlunoItem {
+  modulo_id: number;
+  modulo_nome: string;
+  nota: number;
+  situacao: string;
+  presenca_total: number;
+  presenca_percentual: number;
+}
+
+export interface HistoricoAluno {
+  aluno_id: number;
+  aluno_nome: string;
+  polo_nome: string;
+  turma_nome: string;
+  curso_nome: string;
+  media_geral: number;
+  frequencia_percentual: number;
+  status_geral: string;
+  historico: HistoricoAlunoItem[];
 }
 
 export interface DashboardOverview {

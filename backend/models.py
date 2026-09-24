@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, DateTime, Text
 from sqlalchemy.orm import relationship
 from database import Base
@@ -47,6 +47,16 @@ class Curso(Base):
     modulos = relationship("Modulo", back_populates="curso", cascade="all, delete-orphan", order_by="Modulo.ordem")
     turmas = relationship("Turma", back_populates="curso")
 
+class Materia(Base):
+    __tablename__ = "materias"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nome = Column(String(150), nullable=False, unique=True)
+    codigo = Column(String(30), nullable=False, unique=True)
+    descricao = Column(Text, nullable=True)
+    status = Column(String(20), default="ATIVA")
+    data_criacao = Column(DateTime, default=datetime.utcnow)
+
 class Modulo(Base):
     __tablename__ = "modulos"
 
@@ -88,7 +98,8 @@ class Aluno(Base):
     email = Column(String(120), nullable=False)
     telefone = Column(String(30), nullable=True)
     polo_id = Column(Integer, ForeignKey("polos.id"), nullable=False)
-    data_matricula = Column(DateTime, default=datetime.utcnow)
+    tipo_aluno = Column(String(20), nullable=False, default="ADULTO")
+    data_matricula = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Relacionamentos
     usuario = relationship("Usuario", back_populates="aluno_perfil")
@@ -104,7 +115,7 @@ class Matricula(Base):
     aluno_id = Column(Integer, ForeignKey("alunos.id"), nullable=False)
     turma_id = Column(Integer, ForeignKey("turmas.id"), nullable=False)
     status_matricula = Column(String(20), default="ATIVO")  # ATIVO, CONCLUIDO, TRANCADO
-    data_enturmacao = Column(DateTime, default=datetime.utcnow)
+    data_enturmacao = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Relacionamentos
     aluno = relationship("Aluno", back_populates="matriculas")
@@ -117,7 +128,7 @@ class SessaoAula(Base):
     turma_id = Column(Integer, ForeignKey("turmas.id"), nullable=False)
     data_aula = Column(String(20), nullable=False)  # YYYY-MM-DD
     conteudo = Column(Text, nullable=True)
-    data_registro = Column(DateTime, default=datetime.utcnow)
+    data_registro = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Relacionamentos
     turma = relationship("Turma", back_populates="sessoes_aula")
@@ -144,7 +155,7 @@ class NotaModulo(Base):
     modulo_id = Column(Integer, ForeignKey("modulos.id"), nullable=False)
     nota = Column(Float, nullable=False, default=0.0)
     observacoes = Column(Text, nullable=True)
-    data_lancamento = Column(DateTime, default=datetime.utcnow)
+    data_lancamento = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Relacionamentos
     aluno = relationship("Aluno", back_populates="notas")

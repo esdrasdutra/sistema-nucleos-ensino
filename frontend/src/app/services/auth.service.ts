@@ -29,7 +29,7 @@ export class AuthService {
       email: 'carlos.sp@denomimacao.org',
       perfil: 'GESTOR_NUCLEO',
       poloId: 1,
-      poloNome: 'Polo Central São Paulo'
+      poloNome: 'Núcleo Central São Paulo'
     },
     ALUNO: {
       id: 6,
@@ -37,7 +37,7 @@ export class AuthService {
       email: 'gabriel.santos@aluno.org',
       perfil: 'ALUNO',
       poloId: 1,
-      poloNome: 'Polo Central São Paulo',
+      poloNome: 'Núcleo Central São Paulo',
       alunoId: 1
     }
   };
