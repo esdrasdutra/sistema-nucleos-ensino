@@ -9,14 +9,26 @@ from app.core.database import Base, SessionLocal, engine
 from app.models import Usuario
 from app.seed import seed_database
 
+
+def get_cors_origins():
+    raw = os.getenv("CORS_ORIGINS", "")
+    if raw:
+        return [origin.strip() for origin in raw.split(",") if origin.strip()]
+    if os.getenv("ENVIRONMENT") == "production":
+        return ["https://your-frontend-domain.vercel.app"]
+    return ["http://localhost:4200", "http://127.0.0.1:4200"]
+
+
 Base.metadata.create_all(bind=engine)
 
-db = SessionLocal()
-try:
-    if db.query(Usuario).count() == 0:
-        seed_database()
-finally:
-    db.close()
+ENVIRONMENT = os.getenv("ENVIRONMENT", "local")
+if ENVIRONMENT in {"local", "development"}:
+    db = SessionLocal()
+    try:
+        if db.query(Usuario).count() == 0:
+            seed_database()
+    finally:
+        db.close()
 
 app = FastAPI(
     title="Sistema de Gestão de Núcleos de Ensino Teológico",
@@ -26,7 +38,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=get_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -5,12 +5,13 @@ import {
   Polo, Curso, Materia, Turma, Aluno, Usuario, SessaoChamada, NotaItem, BoletimAluno, HistoricoAluno, DashboardOverview, CriarNucleoPayload, NucleoPublicoResult
 } from '../models/interfaces';
 import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl = 'http://localhost:8000/api/v1';
+  private apiUrl = environment.apiUrl;
 
   constructor(
     private http: HttpClient,

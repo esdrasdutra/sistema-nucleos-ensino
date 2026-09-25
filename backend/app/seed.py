@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 
 from app.core.database import Base, SessionLocal, engine
@@ -17,6 +18,11 @@ from app.models import (
 
 
 def seed_database():
+    environment = os.getenv("ENVIRONMENT", "local")
+    if environment == "production":
+        print("Seed bloqueada em produção para evitar DROP/TABLE reset destrutivo.")
+        return
+
     print("Inicializando banco de dados e semeando dados de teste...")
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
