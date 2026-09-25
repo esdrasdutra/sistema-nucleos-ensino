@@ -1,0 +1,28 @@
+<section class="ementa-page">
+  <div class="ementa-shell">
+    <header class="page-header">
+      <span class="eyebrow">Formação Teológica</span>
+      <h1>Ementa do Curso Teológico</h1>
+      <p>
+        Estrutura curricular do programa de formação ministerial e teológica do QGU — UMADESPA,
+        organizada por módulos e disciplinas sequenciais para desenvolvimento integral do aluno.
+      </p>
+    </header>
+
+    <div class="modulos-grid">
+      <article class="modulo-card" *ngFor="let modulo of modulos; let i = index">
+        <div class="modulo-header">
+          <span class="modulo-badge">{{ modulo.titulo }}</span>
+          <span class="modulo-total">{{ modulo.disciplinas.length }} disciplinas</span>
+        </div>
+
+        <ol class="disciplinas-list">
+          <li *ngFor="let disciplina of modulo.disciplinas; let j = index">
+            <span class="numero">{{ (i * 10) + (j + 1) }}</span>
+            <span class="nome">{{ disciplina }}</span>
+          </li>
+        </ol>
+      </article>
+    </div>
+  </div>
+</section>
